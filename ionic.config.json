@@ -1,0 +1,7 @@
+{
+  "name": "m335-schnitzeljagd",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
