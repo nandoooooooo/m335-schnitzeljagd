@@ -35,3 +35,143 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/**
+ * Typography System
+ * -----------------------------------------------------
+ */
+body {
+  font-family: var(--ion-font-family);
+  font-size: var(--ion-font-size-base);
+  line-height: var(--ion-line-height-base);
+  font-weight: 400;
+  color: var(--ion-text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--ion-text-color);
+  font-weight: 700;
+}
+
+h1 { font-size: 28px; line-height: 34px; }
+h2 { font-size: 24px; line-height: 30px; }
+h3 { font-size: 20px; line-height: 26px; }
+h4 { font-size: 18px; line-height: 24px; }
+h5 { font-size: 16px; line-height: 22px; }
+h6 { font-size: 14px; line-height: 20px; }
+
+p {
+  font-size: 13px;
+  line-height: 19.5px;
+  color: var(--ion-text-color);
+  margin: 0 0 12px;
+}
+
+.text-secondary {
+  color: var(--ion-text-color-secondary);
+}
+
+/**
+ * Button Styling
+ * -----------------------------------------------------
+ */
+ion-button {
+  --border-radius: var(--ion-border-radius);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+
+  &[fill="solid"] {
+    --background: var(--gradient-primary);
+    --box-shadow: var(--shadow-primary);
+  }
+
+  &[fill="outline"] {
+    --border-color: var(--ion-color-primary);
+    --color: var(--ion-color-primary);
+  }
+}
+
+/**
+ * Card Styling
+ * -----------------------------------------------------
+ */
+ion-card {
+  --background: var(--ion-card-background);
+  border-radius: var(--ion-border-radius);
+  border-top: 1px solid var(--ion-border-color);
+  margin: 16px;
+  box-shadow: none;
+}
+
+ion-card-header {
+  padding: 16px;
+}
+
+ion-card-content {
+  padding: 16px;
+}
+
+/**
+ * List & Item Styling
+ * -----------------------------------------------------
+ */
+ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+ion-item {
+  --background: var(--ion-item-background);
+  --border-color: var(--ion-border-color);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+  --min-height: 56px;
+  border-radius: var(--ion-border-radius-small);
+  margin: 8px 16px;
+
+  &::part(native) {
+    border-radius: var(--ion-border-radius-small);
+  }
+}
+
+/**
+ * Toggle Styling
+ * -----------------------------------------------------
+ */
+ion-toggle {
+  --handle-width: 24px;
+  --handle-height: 24px;
+  --handle-spacing: 2px;
+
+  &::part(track) {
+    height: 28px;
+    border-radius: 14px;
+  }
+
+  &.toggle-checked {
+    --background-checked: var(--ion-color-primary);
+  }
+}
+
+/**
+ * Header & Toolbar Styling
+ * -----------------------------------------------------
+ */
+ion-header {
+  background: var(--ion-background-color);
+}
+
+ion-toolbar {
+  --background: var(--ion-background-color);
+  --border-color: var(--ion-border-color);
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 56px;
+}
+
+ion-title {
+  font-size: 20px;
+  font-weight: 700;
+}

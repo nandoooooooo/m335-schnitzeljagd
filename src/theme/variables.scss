@@ -1,2 +1,49 @@
 // For information on how to create your own theme, please refer to:
 // https://ionicframework.com/docs/theming/
+
+:root {
+  // Primary color (Orange gradient start)
+  --ion-color-primary: #FF7F11;
+  --ion-color-primary-rgb: 255, 127, 17;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #e0700f;
+  --ion-color-primary-tint: #ff8c29;
+
+  // Secondary color (Orange gradient end)
+  --ion-color-secondary: #E05A3A;
+  --ion-color-secondary-rgb: 224, 90, 58;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #c54f33;
+  --ion-color-secondary-tint: #e36b4e;
+
+  // Background colors
+  --ion-background-color: #1A1A1A;
+  --ion-background-color-rgb: 26, 26, 26;
+
+  // Card and surface colors
+  --ion-card-background: #2A2A2A;
+  --ion-item-background: #2A2A2A;
+
+  // Text colors
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+  --ion-text-color-secondary: #8c8c8c;
+
+  // Border colors
+  --ion-border-color: #3A3A3A;
+
+  // Custom gradient and shadow
+  --gradient-primary: linear-gradient(98.76deg, #FF7F11 0%, #E05A3A 100%);
+  --shadow-primary: 0px 4px 30px 0px rgba(255, 127, 17, 0.19);
+
+  // Typography
+  --ion-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ion-font-size-base: 13px;
+  --ion-line-height-base: 19.5px;
+
+  // Border radius
+  --ion-border-radius: 12px;
+  --ion-border-radius-small: 8px;
+}
