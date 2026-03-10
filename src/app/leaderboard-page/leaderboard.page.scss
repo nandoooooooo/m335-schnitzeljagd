@@ -1,0 +1,62 @@
+.rank-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rank {
+  width: 24px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--ion-text-color-secondary);
+  flex-shrink: 0;
+}
+
+.medal {
+  width: 24px;
+  text-align: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.name {
+  flex: 1;
+  font-weight: 600;
+  color: var(--ion-text-color);
+}
+
+.name span {
+  margin-left: 4px;
+  color: var(--ion-text-color-secondary);
+  font-weight: 400;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.schnitzel {
+  color: var(--ion-text-color-secondary);
+}
+
+.points {
+  color: var(--ion-color-primary);
+  font-weight: 700;
+}
+
+.me {
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.35);
+  box-shadow: 0 0 0 1px rgba(var(--ion-color-primary-rgb), 0.08);
+}
+
+.bottom-button {
+  position: fixed;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+}

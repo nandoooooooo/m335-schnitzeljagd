@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>🏅 Leaderboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list lines="none">
+
+    @for (player of players; track player.name; let i = $index) {
+
+      <ion-item
+        class="rank-item"
+        [class.me]="player.isMe"
+      >
+
+        <div class="rank">{{ i + 1 }}</div>
+
+        @if (i === 0) { <div class="medal">🥇</div> }
+        @if (i === 1) { <div class="medal">🥈</div> }
+        @if (i === 2) { <div class="medal">🥉</div> }
+
+        <div class="name">
+          {{ player.name }}
+          @if (player.isMe) { <span>(Du)</span> }
+        </div>
+
+        <div class="stats">
+          <span class="schnitzel">🥩 {{ player.schnitzel }}</span>
+          <span class="points">{{ player.points }} Pts</span>
+        </div>
+
+      </ion-item>
+
+    }
+
+  </ion-list>
+
+  <div class="bottom-button">
+    <ion-button expand="block" (click)="goToStart()">
+      Zur Startseite
+    </ion-button>
+  </div>
+
+</ion-content>
