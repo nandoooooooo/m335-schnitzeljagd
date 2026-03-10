@@ -1,0 +1,32 @@
+.start-wrapper {
+  display:         flex;
+  flex-direction:  column;
+  align-items:     center;
+  justify-content: center;
+  min-height:      100vh;
+  padding:         0 24px;
+  gap:             16px;
+  text-align:      center;
+}
+
+
+.logo {
+  width:           160px;
+  height:          160px;
+  background:      var(--gradient-primary);
+  border-radius:   var(--ion-border-radius);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  margin-bottom:   8px;
+  box-shadow:      var(--shadow-primary);
+
+  &__emoji { font-size: 80px; line-height: 1; }
+}
+
+.title__accent {
+  background:              var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip:         text;
+}
