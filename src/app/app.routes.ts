@@ -10,4 +10,9 @@ export const routes: Routes = [
     redirectTo: 'start-page',
     pathMatch: 'full',
   },
+  {
+    path: 'permissions-page',
+    loadComponent: () => import('./permissions-page/permissions-page.page').then( m => m.PermissionsPagePage)
+  },
+
 ];
