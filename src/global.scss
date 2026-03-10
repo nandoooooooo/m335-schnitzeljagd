@@ -118,14 +118,17 @@ ion-card {
   border-top: 1px solid var(--ion-border-color);
   margin: 16px;
   box-shadow: none;
+  width: 100%;
 }
 
 ion-card-header {
   padding: 16px;
+  width: 100%;
 }
 
 ion-card-content {
   padding: 16px;
+  width: 100%;
 }
 
 /**
@@ -187,3 +190,5 @@ ion-title {
   font-size: 20px;
   font-weight: 700;
 }
+
+
