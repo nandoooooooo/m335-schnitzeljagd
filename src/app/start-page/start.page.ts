@@ -1,22 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  IonContent,
-  IonButton,
-} from '@ionic/angular/standalone';
+import { IonContent, IonButton } from '@ionic/angular/standalone';
 
 @Component({
-  selector:    'app-start-page',
-  standalone:  true,
+  selector: 'app-start-page',
+  standalone: true,
   templateUrl: 'start.page.html',
-  styleUrls:   ['start.page.scss'],
-  imports: [
-    IonContent,
-    IonButton,
-  ],
+  styleUrls: ['start.page.scss'],
+  imports: [IonContent, IonButton],
 })
 export class StartPage {
-
   private router = inject(Router);
 
   onStart(): void {
@@ -25,5 +18,9 @@ export class StartPage {
 
   navigateToLeaderboard(): void {
     this.router.navigate(['/leaderboard']);
+  }
+
+  goToLeaderboardPage(): void {
+    this.router.navigate(['/leaderboard-page']);
   }
 }
