@@ -11,7 +11,7 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'permissions-page',
+    path: 'permissions',
     loadComponent: () => import('./permissions-page/permissions-page.page').then( m => m.PermissionsPagePage)
   },
 
