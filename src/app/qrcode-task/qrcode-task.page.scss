@@ -1,0 +1,94 @@
+.task-page {
+  padding-bottom: 120px;
+}
+
+.task-card {
+  margin: 16px;
+  padding: 18px;
+  border-radius: var(--ion-border-radius);
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+}
+
+.task-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.task-card h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.task-card p {
+  margin-bottom: 0;
+}
+
+.scanner-card {
+  cursor: pointer;
+}
+
+.scanner-frame {
+  height: 170px;
+  border-radius: var(--ion-border-radius);
+  border: 1px solid var(--ion-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  background: #000;
+}
+
+.scanner-box {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border: 3px solid var(--ion-color-primary);
+  border-radius: 6px;
+}
+
+.scanner-line {
+  position: absolute;
+  background: var(--ion-color-primary);
+}
+
+.scanner-line.vertical {
+  width: 2px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.scanner-line.horizontal {
+  height: 2px;
+  width: 100%;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.camera-label {
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.scan-status {
+  font-size: 13px;
+}
+
+.hint-label {
+  margin-bottom: 8px;
+}
+
+.task-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+}

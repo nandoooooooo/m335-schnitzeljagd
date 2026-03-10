@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>AUFGABE {{ task.index }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="task-page">
+
+    <section class="task-card">
+      <div class="task-meta text-secondary">
+        <div>AUFGABE {{ task.index }} / {{ task.total }} •</div>
+        <div>{{ task.timer }}</div>
+      </div>
+
+      <h2>{{ task.title }}</h2>
+      <p class="text-secondary">{{ task.description }}</p>
+    </section>
+
+    <section class="task-card scanner-card" (click)="scanQrCode()">
+      <div class="scanner-frame">
+        <div class="scanner-box">
+          <div class="scanner-line vertical"></div>
+          <div class="scanner-line horizontal"></div>
+        </div>
+      </div>
+
+      <div class="camera-label">
+        🔴 {{ task.cameraLabel }}
+      </div>
+
+      <div class="scan-status text-secondary">
+        {{ task.scanStatus }}
+      </div>
+    </section>
+
+    <section class="task-card">
+      <div class="hint-label text-secondary">Hinweis</div>
+      <div class="hint-text">
+        {{ task.hint }}
+      </div>
+    </section>
+
+  </div>
+
+  <div class="task-actions">
+    <ion-button expand="block" fill="outline" (click)="nextTask()">
+      ⏭️ Überspringen
+    </ion-button>
+
+    <ion-button expand="block" fill="outline" (click)="cancel()">
+      ❌ Abbrechen
+    </ion-button>
+  </div>
+</ion-content>
