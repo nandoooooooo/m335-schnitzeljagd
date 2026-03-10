@@ -1,0 +1,41 @@
+<app-page-header title="Übersicht Aufgaben"></app-page-header>
+
+<ion-content>
+  <section class="container">
+    <div class="tasks__hello-section">
+      <div>
+        <p class="text-secondary">Hallo, Max 👋</p>
+        <h3>Aufgaben</h3>
+      </div>
+      <div>
+        <ion-button [color]="'danger'">Abbrechen</ion-button>
+      </div>
+    </div>
+    <div class="tasks__progress-section">
+      <div class="progress-stat">
+        <div class="progress-stat__icon">🥩</div>
+        <div class="progress-stat__value">{{ progressStats.schnitzel }}</div>
+        <div class="progress-stat__label">Schnitzel</div>
+      </div>
+
+      <div class="progress-stat">
+        <div class="progress-stat__icon">🥔</div>
+        <div class="progress-stat__value">{{ progressStats.kartoffel }}</div>
+        <div class="progress-stat__label">Kartoffel</div>
+      </div>
+
+      <div class="progress-stat">
+        <div class="progress-stat__icon">⚡</div>
+        <div class="progress-stat__value">{{ progressStats.punkte }}</div>
+        <div class="progress-stat__label">Punkte</div>
+      </div>
+    </div>
+
+    <div class="tasks__list">
+      @for (task of tasks; track task.id) {
+        <app-task-card [task]="task"></app-task-card>
+      }
+    </div>
+  </section>
+</ion-content>
+

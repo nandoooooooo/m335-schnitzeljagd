@@ -1,0 +1,39 @@
+<ion-card [class.locked]="task.isLocked">
+  <ion-card-content>
+    <div class="task-card">
+      <div class="task-card__icon">
+        <ion-icon [name]="task.icon"></ion-icon>
+      </div>
+
+      <div class="task-card__content">
+        <h3 class="task-card__title">{{ task.title }}</h3>
+        <p class="task-card__description">{{ task.description }}</p>
+      </div>
+
+      <div class="task-card__status">
+        @if (task.time) {
+          <div class="task-card__time">
+            {{ task.time }}
+          </div>
+        }
+
+        @if (task.status === 'active') {
+          <ion-badge color="danger" class="task-card__badge">
+            Aktiv
+          </ion-badge>
+        }
+
+        @if (task.status === 'completed' && task.points) {
+          <div class="task-card__points">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <span>+{{ task.points }}</span>
+          </div>
+        }
+
+        @if (task.isLocked) {
+          <ion-icon name="lock-closed" class="task-card__lock"></ion-icon>
+        }
+      </div>
+    </div>
+  </ion-card-content>
+</ion-card>

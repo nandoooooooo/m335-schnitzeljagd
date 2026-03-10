@@ -45,4 +45,8 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./qrcode-task/qrcode-task.page').then((m) => m.QrTaskPage),
   },
+  {
+    path: 'tasks',
+    loadComponent: () => import('./tasks/tasks.component').then((m) => m.TasksComponent),
+  },
 ];
