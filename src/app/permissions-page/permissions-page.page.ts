@@ -12,18 +12,32 @@ import {
   IonTitle, IonToggle,
   IonToolbar
 } from '@ionic/angular/standalone';
+import { PageHeaderComponent } from '../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-permissions-page',
   templateUrl: './permissions-page.page.html',
   styleUrls: ['./permissions-page.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonText, IonList, IonItem, IonLabel, IonToggle, IonFooter, IonButton, IonImg, IonCard]
+  imports: [
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    CommonModule,
+    FormsModule,
+    IonText,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonToggle,
+    IonFooter,
+    IonButton,
+    IonImg,
+    IonCard,
+    PageHeaderComponent,
+  ],
 })
-export class PermissionsPagePage  {
-
-  constructor() { }
-
-
-
+export class PermissionsPagePage {
+  constructor() {}
 }

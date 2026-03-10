@@ -12,6 +12,7 @@ import {
   IonItem,
   IonButton,
 } from '@ionic/angular/standalone';
+import { PageHeaderComponent } from '../components/page-header/page-header.component';
 
 interface Player {
   name: string;
@@ -27,7 +28,6 @@ interface Player {
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
     IonToolbar,
     IonTitle,
     IonList,
@@ -35,6 +35,7 @@ interface Player {
     IonButton,
     CommonModule,
     FormsModule,
+    PageHeaderComponent,
   ],
 })
 export class LeaderboardPage {

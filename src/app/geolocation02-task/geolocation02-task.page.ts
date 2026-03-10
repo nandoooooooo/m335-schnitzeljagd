@@ -8,6 +8,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { PageHeaderComponent } from '../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-geolocation02-task',
@@ -16,12 +17,12 @@ import {
   standalone: true,
   imports: [
     IonContent,
-    IonHeader,
     IonTitle,
     IonToolbar,
     IonButton,
     CommonModule,
     FormsModule,
+    PageHeaderComponent,
   ],
 })
 export class Geolocation02TaskPage {
