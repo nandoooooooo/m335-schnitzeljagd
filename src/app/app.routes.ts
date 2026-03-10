@@ -13,7 +13,10 @@ export const routes: Routes = [
   },
   {
     path: 'permissions',
-    loadComponent: () => import('./permissions-page/permissions-page.page').then( m => m.PermissionsPagePage)
+    loadComponent: () =>
+      import('./permissions-page/permissions-page.page').then(
+        (m) => m.PermissionsPagePage,
+      ),
   },
 
   {
@@ -22,5 +25,24 @@ export const routes: Routes = [
       import('./leaderboard-page/leaderboard.page').then(
         (m) => m.LeaderboardPage,
       ),
+  },
+  {
+    path: 'geolocation01-task',
+    loadComponent: () =>
+      import('./geolocation01-task/geolocation01-task.page').then(
+        (m) => m.Geolocation01TaskPage,
+      ),
+  },
+  {
+    path: 'geolocation02-task',
+    loadComponent: () =>
+      import('./geolocation02-task/geolocation02-task.page').then(
+        (m) => m.Geolocation02TaskPage,
+      ),
+  },
+  {
+    path: 'qrcode-task',
+    loadComponent: () =>
+      import('./qrcode-task/qrcode-task.page').then((m) => m.QrTaskPage),
   },
 ];

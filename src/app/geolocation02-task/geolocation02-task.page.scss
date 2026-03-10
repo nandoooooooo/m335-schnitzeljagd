@@ -1,0 +1,79 @@
+.task-page {
+  padding-bottom: 120px;
+}
+
+.task-header,
+.task-card {
+  margin: 16px;
+  padding: 18px;
+  border-radius: var(--ion-border-radius);
+  background: var(--ion-card-background);
+  border: 1px solid var(--ion-border-color);
+}
+
+.task-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.task-header h1 {
+  margin: 0 0 8px 0;
+}
+
+.task-header p {
+  margin: 0;
+}
+
+.location-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.location-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pin-wrapper {
+  font-size: 20px;
+}
+
+.location-title {
+  font-weight: 600;
+}
+
+.location-subtitle {
+  font-size: 13px;
+}
+
+.bonus-pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid var(--ion-border-color);
+}
+
+.hint-label {
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.hint-text {
+  font-size: 16px;
+}
+
+.task-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  padding: 16px;
+}
