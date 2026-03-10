@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonButton,
+  IonButton, IonCard,
   IonContent, IonFooter,
   IonHeader, IonImg,
   IonItem,
@@ -18,7 +18,7 @@ import {
   templateUrl: './permissions-page.page.html',
   styleUrls: ['./permissions-page.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonText, IonList, IonItem, IonLabel, IonToggle, IonFooter, IonButton, IonImg]
+  imports: [IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, IonText, IonList, IonItem, IonLabel, IonToggle, IonFooter, IonButton, IonImg, IonCard]
 })
 export class PermissionsPagePage  {
 
