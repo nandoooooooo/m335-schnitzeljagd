@@ -8,8 +8,7 @@ together with my habibis leandro and timo
 ## Implement:
 - Finish Task Overview
 - Finalize Finale-Overviwew
-- Implement Timer per Task and Timer overall
-- Implement Result Schnitzel / Schnitzel and Kartoffel / Nothing per Task 
+- Implement Result Kartoffel per Task 
 - Implement Saving runs / displaying on leaderboard
 
 ## Fix
