@@ -91,11 +91,6 @@ export class PermissionsPage implements OnInit {
           this.updatePermission('camera', r.camera === 'granted');
           break;
         }
-        case 'motion': {
-          await Motion.addListener('accel', () => {});
-          this.updatePermission('motion', true);
-          break;
-        }
       }
     } catch (e) {
       console.error(`Permission request failed for ${key}:`, e);
