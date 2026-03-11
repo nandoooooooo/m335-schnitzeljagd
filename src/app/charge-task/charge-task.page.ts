@@ -1,14 +1,9 @@
-import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { BatteryInfo, Device } from '@capacitor/device';
-import {
-  IonContent,
-  IonHeader,
-  IonFooter,
-  IonToolbar,
-  IonButton,
-} from '@ionic/angular/standalone';
-import { PageHeaderComponent } from '../components/page-header/page-header.component';
+import {Component, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {Router} from '@angular/router';
+import {BatteryInfo, Device} from '@capacitor/device';
+import {IonButton, IonContent,} from '@ionic/angular/standalone';
+import {PageHeaderComponent} from '../components/page-header/page-header.component';
+import {TaskService} from '../services/task.service';
 
 @Component({
   selector: 'app-charge-task',
@@ -19,7 +14,9 @@ import { PageHeaderComponent } from '../components/page-header/page-header.compo
 })
 export class ChargeTaskPage implements OnInit, OnDestroy {
   private router = inject(Router);
+  private taskService = inject(TaskService);
   private interval?: ReturnType<typeof setInterval>;
+  private startTime = Date.now();
 
   task = {
     index: 5,
@@ -35,6 +32,7 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
   detected = signal(0);
 
   async ngOnInit(): Promise<void> {
+    this.startTime = Date.now();
     await this.checkCharging();
     this.interval = setInterval(() => this.checkCharging(), 2000);
   }
@@ -52,6 +50,8 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
 
       if (charging) {
         clearInterval(this.interval);
+        const timeSpent = this.calculateTimeSpent();
+        this.taskService.completeTask(1, timeSpent);
         setTimeout(() => this.nextTask(), 1500);
       }
     } catch (e) {
@@ -59,12 +59,20 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
     }
   }
 
+  private calculateTimeSpent(): string {
+    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+
   nextTask(): void {
-    this.router.navigate(['/task-06']);
+    this.router.navigate(['/tasks']);
   }
 
   skip(): void {
-    this.router.navigate(['/task-06']);
+    this.taskService.skipTask(1);
+    this.router.navigate(['/tasks']);
   }
 
   cancel(): void {

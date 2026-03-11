@@ -1,16 +1,16 @@
 export interface Task {
-  id: string;
+  id: number;
   title: string;
   description: string;
-  icon: string;
+  ionicIconName: string;
+  relativeUrl: string;
+  timeUntilPenalty: string;
+  actualTimeSpent?: string;
   status: 'active' | 'completed' | 'locked';
-  time?: string;
-  points?: number;
-  isLocked: boolean;
+  hint: string;
 }
 
 export interface ProgressStats {
   schnitzel: number;
   kartoffel: number;
-  punkte: number;
 }

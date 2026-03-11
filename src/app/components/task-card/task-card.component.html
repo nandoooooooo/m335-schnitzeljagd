@@ -1,8 +1,8 @@
-<ion-card [class.locked]="task.isLocked" [class.active]="task.status === 'active'">
+<ion-card [class.locked]="task.status === 'locked'" [class.active]="task.status === 'active'" (click)="onCardClick()" [class.clickable]="task.status === 'active'">
   <ion-card-content>
     <div class="task-card">
       <div class="task-card__icon">
-        <ion-icon [name]="task.icon"></ion-icon>
+        <ion-icon [name]="task.ionicIconName"></ion-icon>
       </div>
 
       <div class="task-card__content">
@@ -23,7 +23,7 @@
           </ion-badge>
         }
 
-        @if (task.isLocked) {
+        @if (task.status === 'locked') {
           <ion-icon name="lock-closed" class="task-card__lock"></ion-icon>
         }
       </div>

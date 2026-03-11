@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
 export const routes: Routes = [
   {
@@ -18,7 +18,6 @@ export const routes: Routes = [
         (m) => m.PermissionsPage,
       ),
   },
-
   {
     path: 'leaderboard-page',
     loadComponent: () =>
@@ -27,36 +26,41 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'geolocation01-task',
-    loadComponent: () =>
-      import('./geolocation01-task/geolocation01-task.page').then(
-        (m) => m.Geolocation01TaskPage,
-      ),
-  },
-  {
-    path: 'geolocation02-task',
-    loadComponent: () =>
-      import('./geolocation02-task/geolocation02-task.page').then(
-        (m) => m.Geolocation02TaskPage,
-      ),
-  },
-  {
-    path: 'qrcode-task',
-    loadComponent: () =>
-      import('./qrcode-task/qrcode-task.page').then((m) => m.QrTaskPage),
-  },
-  {
     path: 'tasks',
-    loadComponent: () =>
-      import('./tasks/tasks.component').then((m) => m.TasksComponent),
-  },
-  {
-    path: 'charge-task',
-    loadComponent: () => import('./charge-task/charge-task.page').then( m => m.ChargeTaskPage)
-  },
-  {
-    path: 'wlan-task',
-    loadComponent: () => import('./wlan-task/wlan-task.page').then( m => m.WlanTaskPage)
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./tasks/tasks.component').then((m) => m.TasksComponent),
+      },
+      {
+        path: 'charge',
+        loadComponent: () => import('./charge-task/charge-task.page').then(m => m.ChargeTaskPage)
+      },
+      {
+        path: 'wlan',
+        loadComponent: () => import('./wlan-task/wlan-task.page').then(m => m.WlanTaskPage)
+      },
+      {
+        path: 'qrcode',
+        loadComponent: () =>
+          import('./qrcode-task/qrcode-task.page').then((m) => m.QrTaskPage),
+      },
+      {
+        path: 'geolocation-1',
+        loadComponent: () =>
+          import('./geolocation01-task/geolocation01-task.page').then(
+            (m) => m.Geolocation01TaskPage,
+          ),
+      },
+      {
+        path: 'geolocation-2',
+        loadComponent: () =>
+          import('./geolocation02-task/geolocation02-task.page').then(
+            (m) => m.Geolocation02TaskPage,
+          ),
+      },
+    ],
   },
   {
     path: 'flip-task',

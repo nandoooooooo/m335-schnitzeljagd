@@ -14,10 +14,10 @@
 
     <div class="tasks__completion">
       <div class="tasks__completion-labels">
-        <code class="text-secondary">{{ completedTasksCount }} / {{ totalTasksCount }} erledigt</code>
-        <code class="tasks__completion-percentage">{{ completionPercentage }}%</code>
+        <code class="text-secondary">{{ completedTasksCount() }} / {{ totalTasksCount() }} erledigt</code>
+        <code class="tasks__completion-percentage">{{ completionPercentage() }}%</code>
       </div>
-      <ion-progress-bar [value]="completionProgress" class="tasks__completion-bar"></ion-progress-bar>
+      <ion-progress-bar [value]="completionProgress()" class="tasks__completion-bar"></ion-progress-bar>
     </div>
 
     <div class="tasks__progress-section">
@@ -34,15 +34,15 @@
       </div>
 
       <div class="progress-stat">
-        <div class="progress-stat__icon">⚡</div>
-        <div class="progress-stat__value">{{ progressStats.punkte }}</div>
-        <div class="progress-stat__label">Punkte</div>
+        <div class="progress-stat__icon">⏱️</div>
+        <div class="progress-stat__value">{{ totalTime() }}</div>
+        <div class="progress-stat__label">Zeit</div>
       </div>
     </div>
 
     <div class="tasks__list">
-      @for (task of tasks; track task.id) {
-        <app-task-card [task]="task"></app-task-card>
+      @for (task of tasks(); track task.id) {
+        <app-task-card [task]="task" (taskClick)="onTaskClick($event)"></app-task-card>
       }
     </div>
   </section>

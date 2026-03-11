@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
+import { Router } from '@angular/router';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
 import { IonButton, IonContent, IonProgressBar } from '@ionic/angular/standalone';
 import { ProgressStats, Task} from '../models/task.interface';
 import { TaskCardComponent } from '../components/task-card/task-card.component';
+import { TaskService } from '../services/task.service';
 
 @Component({
   selector: 'app-tasks',
@@ -17,65 +19,50 @@ import { TaskCardComponent } from '../components/task-card/task-card.component';
   ],
 })
 export class TasksComponent {
+  private router = inject(Router);
+  private taskService = inject(TaskService);
+
+  tasks = this.taskService.tasks;
+
   progressStats: ProgressStats = {
     schnitzel: 2,
     kartoffel: 2,
-    punkte: 380,
   };
 
-  get completedTasksCount(): number {
-    return this.tasks.filter(t => t.status === 'completed').length;
-  }
+  completedTasksCount = computed(() =>
+    this.tasks().filter(t => t.status === 'completed').length
+  );
 
-  get totalTasksCount(): number {
-    return this.tasks.length;
-  }
+  totalTasksCount = computed(() => this.tasks().length);
 
-  get completionProgress(): number {
-    return this.completedTasksCount / this.totalTasksCount;
-  }
+  completionProgress = computed(() =>
+    this.completedTasksCount() / this.totalTasksCount()
+  );
 
-  get completionPercentage(): number {
-    return Math.round(this.completionProgress * 100);
-  }
+  completionPercentage = computed(() =>
+    Math.round(this.completionProgress() * 100)
+  );
 
-  tasks: Task[] = [
-    {
-      id: '1',
-      title: 'Foto-Challenge',
-      description: 'Finde 3 Objekte und fotografiere sie',
-      icon: 'camera',
-      status: 'completed',
-      time: '08:42',
-      points: 2,
-      isLocked: false,
-    },
-    {
-      id: '2',
-      title: 'Navigation',
-      description: 'Finde 3 200m Radius Kreise',
-      icon: 'compass',
-      status: 'completed',
-      time: '03:18',
-      points: 1,
-      isLocked: false,
-    },
-    {
-      id: '3',
-      title: 'QR-Code scannen',
-      description: 'Scanne den QR-Code um die Antwort',
-      icon: 'qr-code',
-      status: 'active',
-      time: '03:43',
-      isLocked: false,
-    },
-    {
-      id: '4',
-      title: 'Sound-Rätsel',
-      description: 'Höre dir den Sound an',
-      icon: 'mic',
-      status: 'locked',
-      isLocked: true,
-    },
-  ];
+  totalTime = computed(() => {
+    const completedTasks = this.tasks().filter(t => t.status === 'completed');
+    let totalMinutes = 0;
+    let totalSeconds = 0;
+
+    completedTasks.forEach(task => {
+      if (task.actualTimeSpent) {
+        const [minutes, seconds] = task.actualTimeSpent.split(':').map(Number);
+        totalMinutes += minutes;
+        totalSeconds += seconds;
+      }
+    });
+
+    totalMinutes += Math.floor(totalSeconds / 60);
+    totalSeconds = totalSeconds % 60;
+
+    return `${String(totalMinutes).padStart(2, '0')}:${String(totalSeconds).padStart(2, '0')}`;
+  });
+
+  onTaskClick(task: Task): void {
+    this.router.navigate([task.relativeUrl]);
+  }
 }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Network } from '@capacitor/network';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
+import { TaskService } from '../services/task.service';
 
 @Component({
   selector: 'app-wlan-task',
@@ -13,7 +14,9 @@ import { PageHeaderComponent } from '../components/page-header/page-header.compo
 })
 export class WlanTaskPage implements OnInit, OnDestroy {
   private router = inject(Router);
+  private taskService = inject(TaskService);
   private interval?: ReturnType<typeof setInterval>;
+  private startTime = Date.now();
 
   task = {
     index: 6,
@@ -31,6 +34,7 @@ export class WlanTaskPage implements OnInit, OnDestroy {
   private wasConnected = false;
 
   async ngOnInit(): Promise<void> {
+    this.startTime = Date.now();
     await this.checkNetwork();
     this.interval = setInterval(() => this.checkNetwork(), 2000);
   }
@@ -52,6 +56,8 @@ export class WlanTaskPage implements OnInit, OnDestroy {
       if (!isWifi && this.wasConnected && this.wlanConnected()) {
         this.wlanDisconnected.set(true);
         clearInterval(this.interval);
+        const timeSpent = this.calculateTimeSpent();
+        this.taskService.completeTask(2, timeSpent);
         setTimeout(() => this.nextTask(), 1500);
       }
     } catch (e) {
@@ -59,15 +65,23 @@ export class WlanTaskPage implements OnInit, OnDestroy {
     }
   }
 
+  private calculateTimeSpent(): string {
+    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+
   nextTask(): void {
-    this.router.navigate(['/results']);
+    this.router.navigate(['/tasks']);
   }
 
   skip(): void {
-    this.router.navigate(['/results']);
+    this.taskService.skipTask(2);
+    this.router.navigate(['/tasks']);
   }
 
   cancel(): void {
-    this.router.navigate(['/start-page']);
+    this.router.navigate(['/tasks']);
   }
 }

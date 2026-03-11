@@ -20,6 +20,19 @@ ion-card {
       background: rgba(255, 127, 17, 0.125);
     }
   }
+
+  &.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
 }
 
 ion-card-content {

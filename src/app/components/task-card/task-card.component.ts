@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {Task} from '../../models/task.interface';
 import {IonBadge, IonCard, IonCardContent, IonIcon} from '@ionic/angular/standalone';
 
@@ -16,4 +16,11 @@ import {IonBadge, IonCard, IonCardContent, IonIcon} from '@ionic/angular/standal
 })
 export class TaskCardComponent {
   @Input() task!: Task;
+  @Output() taskClick = new EventEmitter<Task>();
+
+  onCardClick(): void {
+    if (this.task.status === 'active') {
+      this.taskClick.emit(this.task);
+    }
+  }
 }

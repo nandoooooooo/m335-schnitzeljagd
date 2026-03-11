@@ -17,7 +17,7 @@ export class StartPage {
   }
 
   navigateToLeaderboard(): void {
-    this.router.navigate(['/leaderboard']);
+    this.router.navigate(['/leaderboard-page']);
   }
 
   goToLeaderboardPage(): void {

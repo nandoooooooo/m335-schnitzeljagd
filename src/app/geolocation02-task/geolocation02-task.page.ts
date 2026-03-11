@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { Geolocation } from '@capacitor/geolocation';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
+import { TaskService } from '../services/task.service';
 
 const TARGET_DISTANCE_METERS = 20;
 const DEGREES_TO_METERS = 111_000;
@@ -23,7 +24,9 @@ const DEGREES_TO_METERS = 111_000;
 })
 export class Geolocation02TaskPage implements OnInit, OnDestroy {
   private router = inject(Router);
+  private taskService = inject(TaskService);
   private gpsWatchId?: string;
+  private startTime = Date.now();
 
   private startLatitude?: number;
   private startLongitude?: number;
@@ -87,7 +90,16 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
 
   private onTargetReached(): void {
     Geolocation.clearWatch({ id: this.gpsWatchId! });
-    setTimeout(() => this.router.navigate(['/task-03']), 1500);
+    const timeSpent = this.calculateTimeSpent();
+    this.taskService.completeTask(5, timeSpent);
+    setTimeout(() => this.router.navigate(['/tasks']), 1500);
+  }
+
+  private calculateTimeSpent(): string {
+    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 
   private calculateDistance(
@@ -105,7 +117,8 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
   }
 
   skip(): void {
-    this.router.navigate(['/task-03']);
+    this.taskService.skipTask(5);
+    this.router.navigate(['/tasks']);
   }
 
   cancel(): void {
