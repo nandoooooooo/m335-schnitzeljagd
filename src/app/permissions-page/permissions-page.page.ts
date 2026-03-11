@@ -42,7 +42,6 @@ export class PermissionsPage implements OnInit {
   permissions = signal<Permission[]>([
     { key: 'location', icon: '📍', label: 'Standort', granted: false },
     { key: 'camera', icon: '📷', label: 'Kamera', granted: false },
-    { key: 'motion', icon: '🎮', label: 'Bewegungssensor', granted: false },
   ]);
 
   async ngOnInit(): Promise<void> {
