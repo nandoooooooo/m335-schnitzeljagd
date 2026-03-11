@@ -1,15 +1,12 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {firstValueFrom} from 'rxjs';
-// import {App} from '@capacitor/app';
 import {LeaderboardEntry, ProgressStats, Task,} from '../models/task.interface';
 import {environment} from '../../environments/environment';
 import {NameService} from '../../name-service';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
 const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
-
-// const APP_STATE_KEY = 'schnitzeljagd_app_state';
 
 function parseTimeToSeconds(timeString: string): number {
   const [minutes, seconds] = timeString.split(':').map(Number);
@@ -86,12 +83,6 @@ export class TaskService {
   private http = inject(HttpClient);
   private tasksSignal = signal<Task[]>(this.loadTasks());
   private nameService = inject(NameService);
-
-  constructor() {
-    // Hard-close detection disabled for now - was interfering with page reloads
-    // this.checkAppStateOnLaunch();
-    // this.setupAppLifecycleListeners();
-  }
 
   get tasks() {
     return this.tasksSignal.asReadonly();
@@ -232,38 +223,6 @@ export class TaskService {
     this.tasksSignal.set([...DEFAULT_TASKS]);
     this.saveTasks();
   }
-
-  // Disabled: was interfering with page reloads
-  // private setupAppLifecycleListeners(): void {
-  //   App.addListener('appStateChange', (state) => {
-  //     if (!state.isActive) {
-  //       localStorage.setItem(APP_STATE_KEY, JSON.stringify({
-  //         wasActive: true,
-  //         timestamp: Date.now()
-  //       }));
-  //     }
-  //   });
-  // }
-
-  // Disabled: was interfering with page reloads
-  // private checkAppStateOnLaunch(): void {
-  //   const appStateStr = localStorage.getItem(APP_STATE_KEY);
-  //   if (appStateStr) {
-  //     try {
-  //       const appState = JSON.parse(appStateStr);
-  //       const completedTasks = this.tasksSignal().filter(t => t.status === 'completed');
-  //       const allTasksCompleted = completedTasks.length === this.tasksSignal().length;
-  //
-  //       if (appState.wasActive && !allTasksCompleted) {
-  //         this.clearCurrentRun();
-  //       }
-  //
-  //       localStorage.removeItem(APP_STATE_KEY);
-  //     } catch (e) {
-  //       console.error('Failed to parse app state:', e);
-  //     }
-  //   }
-  // }
 
   private loadLeaderboard(): LeaderboardEntry[] {
     const stored = localStorage.getItem(LEADERBOARD_KEY);
