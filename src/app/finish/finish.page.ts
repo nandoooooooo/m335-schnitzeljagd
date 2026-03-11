@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
 import { TaskService } from '../services/task.service';
+import { NameService } from '../../name-service';
 
 interface TaskResult {
   icon: string;
@@ -36,18 +37,21 @@ function parseTimeToSeconds(timeString: string): number {
 export class FinishPage {
   private router = inject(Router);
   private taskService = inject(TaskService);
+  private nameService = inject(NameService);
 
-  playerName = 'Player';
+  get playerName(): string {
+    return this.nameService.playerName();
+  }
 
   completedTasks = computed(() => {
-    return this.taskService.tasks().filter(t => t.status === 'completed');
+    return this.taskService.tasks().filter((t) => t.status === 'completed');
   });
 
   progressStats = this.taskService.progressStats;
 
   totalTime = computed(() => {
     let totalSeconds = 0;
-    this.completedTasks().forEach(task => {
+    this.completedTasks().forEach((task) => {
       if (task.actualTimeSpent) {
         totalSeconds += parseTimeToSeconds(task.actualTimeSpent);
       }
@@ -62,11 +66,11 @@ export class FinishPage {
   kartoffelCount = computed(() => this.progressStats().kartoffel);
 
   totalPoints = computed(() => {
-    return (this.schnitzelCount() * 100) + (this.kartoffelCount() * 50);
+    return this.schnitzelCount() * 100 + this.kartoffelCount() * 50;
   });
 
   taskResults = computed((): TaskResult[] => {
-    return this.completedTasks().map(task => {
+    return this.completedTasks().map((task) => {
       const timeSpentSeconds = task.actualTimeSpent
         ? parseTimeToSeconds(task.actualTimeSpent)
         : 0;
@@ -95,6 +99,6 @@ export class FinishPage {
 
   newRound(): void {
     this.taskService.resetTasks();
-    this.router.navigate(['/tasks']);
+    this.router.navigate(['/start-page']);
   }
 }

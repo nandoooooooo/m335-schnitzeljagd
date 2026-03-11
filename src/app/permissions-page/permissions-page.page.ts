@@ -104,16 +104,18 @@ export class PermissionsPage implements OnInit {
       buttons: [
         {
           text: 'Weiter',
-          handler: (data) => {
-            if (data.name?.trim()) {
-              this.nameService.playerName.set(data.name.trim());
+          handler: (data: { name: string }) => {
+            const name = data?.name?.trim();
+            if (name) {
+              this.nameService.playerName.set(name);
             }
-            this.router.navigate(['/tasks']);
           },
         },
       ],
     });
     await alert.present();
+    await alert.onDidDismiss();
+    this.router.navigate(['/tasks']);
   }
 
   private updatePermission(key: Permission['key'], granted: boolean): void {

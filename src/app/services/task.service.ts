@@ -1,9 +1,14 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {firstValueFrom} from 'rxjs';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 // import {App} from '@capacitor/app';
-import {LeaderboardEntry, ProgressStats, Task} from '../models/task.interface';
-import {environment} from '../../environments/environment';
+import {
+  LeaderboardEntry,
+  ProgressStats,
+  Task,
+} from '../models/task.interface';
+import { environment } from '../../environments/environment';
+import { NameService } from '../../name-service';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
 const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
@@ -83,6 +88,7 @@ const DEFAULT_TASKS: Task[] = [
 export class TaskService {
   private http = inject(HttpClient);
   private tasksSignal = signal<Task[]>(this.loadTasks());
+  private nameService = inject(NameService);
 
   constructor() {
     // Hard-close detection disabled for now - was interfering with page reloads
@@ -95,11 +101,13 @@ export class TaskService {
   }
 
   progressStats = computed((): ProgressStats => {
-    const completedTasks = this.tasksSignal().filter(t => t.status === 'completed' && t.actualTimeSpent);
+    const completedTasks = this.tasksSignal().filter(
+      (t) => t.status === 'completed' && t.actualTimeSpent,
+    );
     let schnitzel = 0;
     let kartoffel = 0;
 
-    completedTasks.forEach(task => {
+    completedTasks.forEach((task) => {
       if (!task.actualTimeSpent) return;
 
       const timeSpentSeconds = parseTimeToSeconds(task.actualTimeSpent);
@@ -112,7 +120,7 @@ export class TaskService {
       }
     });
 
-    return {schnitzel, kartoffel};
+    return { schnitzel, kartoffel };
   });
 
   private loadTasks(): Task[] {
@@ -154,15 +162,17 @@ export class TaskService {
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return {...task, status: 'active' as const};
+          return { ...task, status: 'active' as const };
         }
 
         return task;
-      })
+      }),
     );
     this.saveTasks();
 
-    const allCompleted = this.tasksSignal().every(t => t.status === 'completed');
+    const allCompleted = this.tasksSignal().every(
+      (t) => t.status === 'completed',
+    );
     if (allCompleted) {
       await this.saveToLeaderboard();
       this.clearCurrentRun();
@@ -175,8 +185,8 @@ export class TaskService {
   pauseTask(id: number, elapsedSeconds: number): void {
     this.tasksSignal.update((tasks) =>
       tasks.map((task) =>
-        task.id === id ? {...task, timeElapsed: elapsedSeconds} : task
-      )
+        task.id === id ? { ...task, timeElapsed: elapsedSeconds } : task,
+      ),
     );
     this.saveTasks();
   }
@@ -194,15 +204,17 @@ export class TaskService {
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return {...task, status: 'active' as const};
+          return { ...task, status: 'active' as const };
         }
 
         return task;
-      })
+      }),
     );
     this.saveTasks();
 
-    const allCompleted = this.tasksSignal().every(t => t.status === 'completed');
+    const allCompleted = this.tasksSignal().every(
+      (t) => t.status === 'completed',
+    );
     if (allCompleted) {
       await this.saveToLeaderboard();
       this.clearCurrentRun();
@@ -214,7 +226,7 @@ export class TaskService {
 
   updateTaskStatus(id: number, status: Task['status']): void {
     this.tasksSignal.update((tasks) =>
-      tasks.map((task) => (task.id === id ? {...task, status} : task))
+      tasks.map((task) => (task.id === id ? { ...task, status } : task)),
     );
     this.saveTasks();
   }
@@ -276,10 +288,12 @@ export class TaskService {
 
   async saveToLeaderboard(): Promise<void> {
     const stats = this.progressStats();
-    const completedTasks = this.tasksSignal().filter(t => t.status === 'completed');
+    const completedTasks = this.tasksSignal().filter(
+      (t) => t.status === 'completed',
+    );
 
     let totalSeconds = 0;
-    completedTasks.forEach(task => {
+    completedTasks.forEach((task) => {
       if (task.actualTimeSpent) {
         totalSeconds += parseTimeToSeconds(task.actualTimeSpent);
       }
@@ -299,23 +313,27 @@ export class TaskService {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    const name = 'Player';
-    const body = `entry.1860183935=${encodeURIComponent(name)}` +
-                 `&entry.564282981=${stats.schnitzel}` +
-                 `&entry.1079317865=${stats.kartoffel}` +
-                 `&entry.985590604=${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const name = this.nameService.playerName();
+    const body =
+      `entry.1860183935=${encodeURIComponent(name)}` +
+      `&entry.564282981=${stats.schnitzel}` +
+      `&entry.1079317865=${stats.kartoffel}` +
+      `&entry.985590604=${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
     try {
       await firstValueFrom(
         this.http.post(environment.leaderboardUrl, body, {
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        })
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }),
       );
       console.log('Leaderboard entry saved to Google Forms');
     } catch (error) {
-      console.error('Failed to save to Google Forms, kept in localStorage:', error);
+      console.error(
+        'Failed to save to Google Forms, kept in localStorage:',
+        error,
+      );
     }
   }
 
