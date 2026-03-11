@@ -6,6 +6,7 @@ import {IonBadge, IonCard, IonCardContent, IonIcon} from '@ionic/angular/standal
   selector: 'app-task-card',
   templateUrl: './task-card.component.html',
   styleUrls: ['./task-card.component.scss'],
+  standalone: true,
   imports: [
     IonCard,
     IonCardContent,

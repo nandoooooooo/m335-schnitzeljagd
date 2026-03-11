@@ -1,18 +1,29 @@
 ion-card {
   margin: 0;
   background: rgba(172, 191, 164, 0.03);
+  border: 1px solid rgba(172, 191, 164, 0.125);
+  border-radius: 1rem;
 
   &.locked {
-    opacity: 0.5;
+    opacity: 0.45;
 
     .task-card__icon ion-icon {
       color: var(--ion-text-color-secondary);
     }
   }
+
+  &.active {
+    border: 1px solid rgb(255, 127, 17);
+    background: rgba(255, 127, 17, 0.03);
+
+    .task-card__icon {
+      background: rgba(255, 127, 17, 0.125);
+    }
+  }
 }
 
 ion-card-content {
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
 .task-card {
@@ -27,7 +38,7 @@ ion-card-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 127, 17, 0.1);
+    background: rgba(168, 189, 159, 0.125);
     border-radius: var(--ion-border-radius-small);
 
     ion-icon {
@@ -65,23 +76,25 @@ ion-card-content {
     gap: 0.5rem;
   }
 
-  &__time {
-    font-size: 0.875rem;
-    color: var(--ion-text-color-secondary);
-    font-weight: 500;
-  }
-
   &__badge {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    text-transform: none;
+    padding: 0.4rem 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--ion-border-radius);
+    background: rgba(168, 189, 159, 0.125);
+    font-size: .85rem;
+
+    &--active {
+      background: rgba(255, 127, 17, 0.125);
+      color: var(--ion-color-primary);
+    }
   }
 
-  &__points {
+  &__completed-badge {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    color: var(--ion-color-primary);
     font-weight: 600;
 
     ion-icon {

@@ -4,13 +4,22 @@
   <section class="container">
     <div class="tasks__hello-section">
       <div>
-        <p class="text-secondary">Hallo, Max 👋</p>
+        <code class="text-secondary">Hallo, Max 👋</code>
         <h3>Aufgaben</h3>
       </div>
       <div>
         <ion-button [color]="'danger'">Abbrechen</ion-button>
       </div>
     </div>
+
+    <div class="tasks__completion">
+      <div class="tasks__completion-labels">
+        <code class="text-secondary">{{ completedTasksCount }} / {{ totalTasksCount }} erledigt</code>
+        <code class="tasks__completion-percentage">{{ completionPercentage }}%</code>
+      </div>
+      <ion-progress-bar [value]="completionProgress" class="tasks__completion-bar"></ion-progress-bar>
+    </div>
+
     <div class="tasks__progress-section">
       <div class="progress-stat">
         <div class="progress-stat__icon">🥩</div>

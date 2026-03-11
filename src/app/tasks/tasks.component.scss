@@ -13,6 +13,36 @@
   }
 }
 
+.tasks__completion {
+  margin-bottom: 1.5rem;
+}
+
+.tasks__completion-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.tasks__completion-percentage {
+  color: rgb(255, 127, 17);
+}
+
+.tasks__completion-bar {
+  height: 8px;
+  border-radius: 4px;
+
+  &::part(progress) {
+    background: linear-gradient(to right, rgb(255, 127, 17), rgb(168, 189, 159));
+    border-radius: 4px;
+  }
+
+  &::part(track) {
+    background: rgba(168, 189, 159, 0.1);
+    border-radius: 4px;
+  }
+}
+
 .tasks__progress-section {
   display: flex;
   gap: 1rem;

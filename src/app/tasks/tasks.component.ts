@@ -1,14 +1,20 @@
 import { Component } from '@angular/core';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
-import { Task, ProgressStats } from '../models/task.interface';
+import { IonButton, IonContent, IonProgressBar } from '@ionic/angular/standalone';
+import { ProgressStats, Task} from '../models/task.interface';
 import { TaskCardComponent } from '../components/task-card/task-card.component';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
-  imports: [PageHeaderComponent, IonContent, IonButton, TaskCardComponent],
+  imports: [
+    PageHeaderComponent,
+    IonContent,
+    IonButton,
+    TaskCardComponent,
+    IonProgressBar,
+  ],
 })
 export class TasksComponent {
   progressStats: ProgressStats = {
@@ -16,6 +22,22 @@ export class TasksComponent {
     kartoffel: 2,
     punkte: 380,
   };
+
+  get completedTasksCount(): number {
+    return this.tasks.filter(t => t.status === 'completed').length;
+  }
+
+  get totalTasksCount(): number {
+    return this.tasks.length;
+  }
+
+  get completionProgress(): number {
+    return this.completedTasksCount / this.totalTasksCount;
+  }
+
+  get completionPercentage(): number {
+    return Math.round(this.completionProgress * 100);
+  }
 
   tasks: Task[] = [
     {
@@ -32,7 +54,7 @@ export class TasksComponent {
       id: '2',
       title: 'Navigation',
       description: 'Finde 3 200m Radius Kreise',
-      icon: 'navigate',
+      icon: 'compass',
       status: 'completed',
       time: '03:18',
       points: 1,
@@ -51,7 +73,7 @@ export class TasksComponent {
       id: '4',
       title: 'Sound-Rätsel',
       description: 'Höre dir den Sound an',
-      icon: 'volume-high',
+      icon: 'mic',
       status: 'locked',
       isLocked: true,
     },
