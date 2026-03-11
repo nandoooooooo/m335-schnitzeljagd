@@ -6,12 +6,12 @@ together with my habibis leandro and timo
 
 # TODO
 ## Implement:
-- Finish Task Overview
 - Finalize Finale-Overviwew
-- Implement Result Kartoffel per Task 
-- Implement Saving runs / displaying on leaderboard
+- Implement Result Kartoffel per Task
+- implement Sound / Vibrate on completed task
+- Displaying on leaderboard
+- Implement Saving runs in local storage
 
 ## Fix
 - Buggy Geolocation 02
-- No Vibrate on Completion
 - Spieler kann leer erfast werden
