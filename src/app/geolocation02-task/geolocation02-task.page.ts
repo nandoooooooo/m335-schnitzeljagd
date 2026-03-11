@@ -17,8 +17,6 @@ import { PageHeaderComponent } from '../components/page-header/page-header.compo
   standalone: true,
   imports: [
     IonContent,
-    IonTitle,
-    IonToolbar,
     IonButton,
     CommonModule,
     FormsModule,

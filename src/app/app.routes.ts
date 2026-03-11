@@ -50,4 +50,8 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./tasks/tasks.component').then((m) => m.TasksComponent),
   },
+  {
+    path: 'charge-task',
+    loadComponent: () => import('./charge-task/charge-task.page').then( m => m.ChargeTaskPage)
+  },
 ];

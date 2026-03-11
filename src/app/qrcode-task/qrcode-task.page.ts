@@ -13,6 +13,7 @@ import {
   CapacitorBarcodeScanner,
   CapacitorBarcodeScannerTypeHint,
 } from '@capacitor/barcode-scanner';
+import { PageHeaderComponent } from '../components/page-header/page-header.component';
 
 @Component({
   selector: 'app-qrcode-task',
@@ -22,11 +23,10 @@ import {
   imports: [
     IonContent,
     IonHeader,
-    IonTitle,
-    IonToolbar,
     IonButton,
     CommonModule,
     FormsModule,
+    PageHeaderComponent,
   ],
 })
 export class QrTaskPage {
