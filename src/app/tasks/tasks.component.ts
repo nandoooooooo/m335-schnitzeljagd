@@ -1,26 +1,20 @@
-import {Component} from '@angular/core';
-import {PageHeaderComponent} from "../components/page-header/page-header.component";
-import {IonButton, IonContent, IonIcon} from "@ionic/angular/standalone";
-import {Task, ProgressStats} from "../models/task.interface";
-import {TaskCardComponent} from "../components/task-card/task-card.component";
+import { Component } from '@angular/core';
+import { PageHeaderComponent } from '../components/page-header/page-header.component';
+import { IonButton, IonContent, IonIcon } from '@ionic/angular/standalone';
+import { Task, ProgressStats } from '../models/task.interface';
+import { TaskCardComponent } from '../components/task-card/task-card.component';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
-  imports: [
-    PageHeaderComponent,
-    IonContent,
-    IonButton,
-    TaskCardComponent,
-    IonIcon
-  ]
+  imports: [PageHeaderComponent, IonContent, IonButton, TaskCardComponent],
 })
 export class TasksComponent {
   progressStats: ProgressStats = {
     schnitzel: 2,
     kartoffel: 2,
-    punkte: 380
+    punkte: 380,
   };
 
   tasks: Task[] = [
@@ -32,7 +26,7 @@ export class TasksComponent {
       status: 'completed',
       time: '08:42',
       points: 2,
-      isLocked: false
+      isLocked: false,
     },
     {
       id: '2',
@@ -42,7 +36,7 @@ export class TasksComponent {
       status: 'completed',
       time: '03:18',
       points: 1,
-      isLocked: false
+      isLocked: false,
     },
     {
       id: '3',
@@ -51,7 +45,7 @@ export class TasksComponent {
       icon: 'qr-code',
       status: 'active',
       time: '03:43',
-      isLocked: false
+      isLocked: false,
     },
     {
       id: '4',
@@ -59,7 +53,7 @@ export class TasksComponent {
       description: 'Höre dir den Sound an',
       icon: 'volume-high',
       status: 'locked',
-      isLocked: true
-    }
+      isLocked: true,
+    },
   ];
 }
