@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
+import { NameService } from '../../name-service';
 
 interface TaskResult {
   icon: string;
@@ -20,8 +21,7 @@ interface TaskResult {
 })
 export class FinishPage {
   private router = inject(Router);
-
-  playerName = 'Max';
+  private nameService = inject(NameService);
   totalTime = '27:34 min';
   schnitzelCount = 4;
   kartoffelCount = 2;
@@ -75,8 +75,11 @@ export class FinishPage {
   goToLeaderboard(): void {
     this.router.navigate(['/leaderboard-page']);
   }
+  get playerName(): string {
+    return this.nameService.playerName();
+  }
 
   newRound(): void {
-    this.router.navigate(['/tasks']);
+    this.router.navigate(['/start-page']);
   }
 }

@@ -13,6 +13,8 @@ import {
   IonToggle,
 } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
+import { AlertController } from '@ionic/angular/standalone';
+import { NameService } from '../../name-service';
 
 interface Permission {
   key: 'location' | 'camera' | 'motion';
@@ -38,6 +40,8 @@ interface Permission {
 })
 export class PermissionsPage implements OnInit {
   private router = inject(Router);
+  private alertController = inject(AlertController);
+  private nameService = inject(NameService);
 
   permissions = signal<Permission[]>([
     { key: 'location', icon: '📍', label: 'Standort', granted: false },
@@ -99,7 +103,22 @@ export class PermissionsPage implements OnInit {
   }
 
   async onWeiter(): Promise<void> {
-    this.router.navigate(['/tasks']);
+    const alert = await this.alertController.create({
+      header: 'Dein Name',
+      inputs: [{ name: 'name', type: 'text', placeholder: 'Max Mustermann' }],
+      buttons: [
+        {
+          text: 'Weiter',
+          handler: (data) => {
+            if (data.name?.trim()) {
+              this.nameService.playerName.set(data.name.trim());
+            }
+            this.router.navigate(['/tasks']);
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   private updatePermission(key: Permission['key'], granted: boolean): void {
