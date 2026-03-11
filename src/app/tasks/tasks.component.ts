@@ -1,15 +1,11 @@
-import { Component, inject, computed } from '@angular/core';
-import { Router } from '@angular/router';
-import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import {
-  IonButton,
-  IonContent,
-  IonProgressBar,
-} from '@ionic/angular/standalone';
-import { ProgressStats, Task } from '../models/task.interface';
-import { TaskCardComponent } from '../components/task-card/task-card.component';
-import { TaskService } from '../services/task.service';
-import { NameService } from '../../name-service';
+import {Component, computed, inject} from '@angular/core';
+import {Router} from '@angular/router';
+import {PageHeaderComponent} from '../components/page-header/page-header.component';
+import {IonButton, IonContent, IonProgressBar,} from '@ionic/angular/standalone';
+import {Task} from '../models/task.interface';
+import {TaskCardComponent} from '../components/task-card/task-card.component';
+import {TaskService} from '../services/task.service';
+import {NameService} from '../../name-service';
 
 @Component({
   selector: 'app-tasks',
@@ -67,5 +63,18 @@ export class TasksComponent {
 
   onTaskClick(task: Task): void {
     this.router.navigate([task.relativeUrl]);
+  }
+
+  onCancelRun(): void {
+    const confirmed = window.confirm(
+      'Möchtest du den Lauf wirklich abbrechen? Dein Fortschritt wird zurückgesetzt.',
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.taskService.clearCurrentRun();
+    this.router.navigate(['/start-page']);
   }
 }

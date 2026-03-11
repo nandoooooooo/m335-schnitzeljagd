@@ -2,7 +2,6 @@ import { Component, inject, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import { NameService } from '../../name-service';
 import { TaskService } from '../services/task.service';
 
 interface TaskResult {
@@ -43,11 +42,6 @@ export class FinishPage {
   completedTasks = computed(() => {
     return this.taskService.tasks().filter(t => t.status === 'completed');
   });
-  private nameService = inject(NameService);
-  totalTime = '27:34 min';
-  schnitzelCount = 4;
-  kartoffelCount = 2;
-  totalPoints = 380;
 
   progressStats = this.taskService.progressStats;
 
@@ -98,12 +92,9 @@ export class FinishPage {
   goToLeaderboard(): void {
     this.router.navigate(['/leaderboard-page']);
   }
-  get playerName(): string {
-    return this.nameService.playerName();
-  }
 
   newRound(): void {
     this.taskService.resetTasks();
-    this.router.navigate(['/start-page']);
+    this.router.navigate(['/tasks']);
   }
 }
