@@ -15,7 +15,6 @@ together with my habibis leandro and timo
 
 ## Fix
 - Delete unused Permission
-- Buggy cam permission when activated
 - Permission Removal
 - Buggy Geolocation 02
 - No Vibrate on Completion
