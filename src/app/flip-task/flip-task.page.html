@@ -1,0 +1,43 @@
+<app-page-header title="Aufgabe 4" />
+
+<ion-content [fullscreen]="true">
+
+  <div class="task-page" [class.task-page--flipped]="isFlipped()">
+
+    <section class="task-card">
+      <div class="task-meta text-secondary">
+        <div>AUFGABE {{ task.index }} / {{ task.total }} •</div>
+        <div>{{ task.timer }}</div>
+      </div>
+      <h2>{{ task.title }}</h2>
+      <p class="text-secondary">{{ task.description }}</p>
+    </section>
+
+    <section class="task-card location-card" [class.location-card--done]="isFlipped()" style="transform: rotate(180deg);">
+      <div class="location-left">
+        <div class="pin-wrapper">{{ isFlipped() ? '✅' : '🔄' }}</div>
+        <div>
+          <div class="location-title">Handy umgedreht</div>
+          <div class="location-subtitle text-secondary">{{ detected() }} / 1</div>
+        </div>
+      </div>
+      <div class="bonus-pill">{{ task.bonusTime }}</div>
+    </section>
+
+    <section class="task-card" style="transform: rotate(180deg);">
+      <div class="hint-label text-secondary">Hinweis</div>
+      <div class="hint-text">{{ task.hint }}</div>
+    </section>
+
+  </div>
+
+  <div class="task-actions">
+    <ion-button expand="block" fill="outline" (click)="skip()">
+      ⏭️ Überspringen
+    </ion-button>
+    <ion-button expand="block" fill="outline" (click)="cancel()">
+      ❌ Abbrechen
+    </ion-button>
+  </div>
+
+</ion-content>

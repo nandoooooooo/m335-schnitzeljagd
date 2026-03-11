@@ -58,4 +58,8 @@ export const routes: Routes = [
     path: 'wlan-task',
     loadComponent: () => import('./wlan-task/wlan-task.page').then( m => m.WlanTaskPage)
   },
+  {
+    path: 'flip-task',
+    loadComponent: () => import('./flip-task/flip-task.page').then( m => m.FlipTaskPage)
+  },
 ];
