@@ -2,7 +2,6 @@ import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { Geolocation } from '@capacitor/geolocation';
 import { Camera } from '@capacitor/camera';
-import { Motion } from '@capacitor/motion';
 import { Capacitor } from '@capacitor/core';
 import {
   IonContent,
@@ -15,6 +14,7 @@ import {
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
 import { AlertController } from '@ionic/angular/standalone';
 import { NameService } from '../../name-service';
+import { AndroidSettings, NativeSettings } from 'capacitor-native-settings';
 
 interface Permission {
   key: 'location' | 'camera' | 'motion';
@@ -68,7 +68,9 @@ export class PermissionsPage implements OnInit {
     if (newValue) {
       await this.requestPermission(key);
     } else {
-      this.updatePermission(key, false); // rot
+      await NativeSettings.openAndroid({
+        option: AndroidSettings.ApplicationDetails,
+      });
     }
   }
 
