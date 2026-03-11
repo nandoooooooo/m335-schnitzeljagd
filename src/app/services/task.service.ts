@@ -1,7 +1,18 @@
-import { Injectable, signal } from '@angular/core';
-import { Task } from '../models/task.interface';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {firstValueFrom} from 'rxjs';
+// import {App} from '@capacitor/app';
+import {LeaderboardEntry, ProgressStats, Task} from '../models/task.interface';
+import {environment} from '../../environments/environment';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
+const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
+// const APP_STATE_KEY = 'schnitzeljagd_app_state';
+
+function parseTimeToSeconds(timeString: string): number {
+  const [minutes, seconds] = timeString.split(':').map(Number);
+  return minutes * 60 + seconds;
+}
 
 const DEFAULT_TASKS: Task[] = [
   {
@@ -36,6 +47,16 @@ const DEFAULT_TASKS: Task[] = [
   },
   {
     id: 4,
+    title: 'Handy flippen',
+    description: 'Drehe dein Handy',
+    ionicIconName: 'phone-portrait',
+    relativeUrl: '/tasks/flip',
+    timeUntilPenalty: '05:00',
+    status: 'locked',
+    hint: 'Kannst du das lesen?',
+  },
+  {
+    id: 5,
     title: 'Standort 1 finden',
     description: 'Finde den ersten Standort',
     ionicIconName: 'location',
@@ -45,7 +66,7 @@ const DEFAULT_TASKS: Task[] = [
     hint: 'Verwende die Karte',
   },
   {
-    id: 5,
+    id: 6,
     title: 'Standort 2 finden',
     description: 'Finde den zweiten Standort',
     ionicIconName: 'navigate',
@@ -60,11 +81,39 @@ const DEFAULT_TASKS: Task[] = [
   providedIn: 'root',
 })
 export class TaskService {
+  private http = inject(HttpClient);
   private tasksSignal = signal<Task[]>(this.loadTasks());
+
+  constructor() {
+    // Hard-close detection disabled for now - was interfering with page reloads
+    // this.checkAppStateOnLaunch();
+    // this.setupAppLifecycleListeners();
+  }
 
   get tasks() {
     return this.tasksSignal.asReadonly();
   }
+
+  progressStats = computed((): ProgressStats => {
+    const completedTasks = this.tasksSignal().filter(t => t.status === 'completed' && t.actualTimeSpent);
+    let schnitzel = 0;
+    let kartoffel = 0;
+
+    completedTasks.forEach(task => {
+      if (!task.actualTimeSpent) return;
+
+      const timeSpentSeconds = parseTimeToSeconds(task.actualTimeSpent);
+      const penaltyTimeSeconds = parseTimeToSeconds(task.timeUntilPenalty);
+
+      schnitzel++;
+
+      if (timeSpentSeconds > penaltyTimeSeconds) {
+        kartoffel++;
+      }
+    });
+
+    return {schnitzel, kartoffel};
+  });
 
   private loadTasks(): Task[] {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -86,7 +135,7 @@ export class TaskService {
     return this.tasksSignal().find((t) => t.id === id);
   }
 
-  completeTask(id: number, timeSpent: string): void {
+  async completeTask(id: number, timeSpent: string): Promise<boolean> {
     this.tasksSignal.update((tasks) =>
       tasks.map((task) => {
         if (task.id === id) {
@@ -94,6 +143,7 @@ export class TaskService {
             ...task,
             status: 'completed' as const,
             actualTimeSpent: timeSpent,
+            timeElapsed: undefined,
           };
 
           const nextTask = tasks.find((t) => t.id === id + 1);
@@ -104,16 +154,34 @@ export class TaskService {
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return { ...task, status: 'active' as const };
+          return {...task, status: 'active' as const};
         }
 
         return task;
       })
     );
     this.saveTasks();
+
+    const allCompleted = this.tasksSignal().every(t => t.status === 'completed');
+    if (allCompleted) {
+      await this.saveToLeaderboard();
+      this.clearCurrentRun();
+      return true;
+    }
+
+    return false;
   }
 
-  skipTask(id: number): void {
+  pauseTask(id: number, elapsedSeconds: number): void {
+    this.tasksSignal.update((tasks) =>
+      tasks.map((task) =>
+        task.id === id ? {...task, timeElapsed: elapsedSeconds} : task
+      )
+    );
+    this.saveTasks();
+  }
+
+  async skipTask(id: number): Promise<boolean> {
     this.tasksSignal.update((tasks) =>
       tasks.map((task) => {
         if (task.id === id) {
@@ -121,22 +189,32 @@ export class TaskService {
             ...task,
             status: 'completed' as const,
             actualTimeSpent: undefined,
+            timeElapsed: undefined,
           };
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return { ...task, status: 'active' as const };
+          return {...task, status: 'active' as const};
         }
 
         return task;
       })
     );
     this.saveTasks();
+
+    const allCompleted = this.tasksSignal().every(t => t.status === 'completed');
+    if (allCompleted) {
+      await this.saveToLeaderboard();
+      this.clearCurrentRun();
+      return true;
+    }
+
+    return false;
   }
 
   updateTaskStatus(id: number, status: Task['status']): void {
     this.tasksSignal.update((tasks) =>
-      tasks.map((task) => (task.id === id ? { ...task, status } : task))
+      tasks.map((task) => (task.id === id ? {...task, status} : task))
     );
     this.saveTasks();
   }
@@ -144,5 +222,109 @@ export class TaskService {
   resetTasks(): void {
     this.tasksSignal.set([...DEFAULT_TASKS]);
     this.saveTasks();
+  }
+
+  // Disabled: was interfering with page reloads
+  // private setupAppLifecycleListeners(): void {
+  //   App.addListener('appStateChange', (state) => {
+  //     if (!state.isActive) {
+  //       localStorage.setItem(APP_STATE_KEY, JSON.stringify({
+  //         wasActive: true,
+  //         timestamp: Date.now()
+  //       }));
+  //     }
+  //   });
+  // }
+
+  // Disabled: was interfering with page reloads
+  // private checkAppStateOnLaunch(): void {
+  //   const appStateStr = localStorage.getItem(APP_STATE_KEY);
+  //   if (appStateStr) {
+  //     try {
+  //       const appState = JSON.parse(appStateStr);
+  //       const completedTasks = this.tasksSignal().filter(t => t.status === 'completed');
+  //       const allTasksCompleted = completedTasks.length === this.tasksSignal().length;
+  //
+  //       if (appState.wasActive && !allTasksCompleted) {
+  //         this.clearCurrentRun();
+  //       }
+  //
+  //       localStorage.removeItem(APP_STATE_KEY);
+  //     } catch (e) {
+  //       console.error('Failed to parse app state:', e);
+  //     }
+  //   }
+  // }
+
+  private loadLeaderboard(): LeaderboardEntry[] {
+    const stored = localStorage.getItem(LEADERBOARD_KEY);
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.error('Failed to load leaderboard from localStorage:', e);
+      }
+    }
+    return [];
+  }
+
+  private saveLeaderboardEntry(entry: LeaderboardEntry): void {
+    const leaderboard = this.loadLeaderboard();
+    leaderboard.push(entry);
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
+  }
+
+  async saveToLeaderboard(): Promise<void> {
+    const stats = this.progressStats();
+    const completedTasks = this.tasksSignal().filter(t => t.status === 'completed');
+
+    let totalSeconds = 0;
+    completedTasks.forEach(task => {
+      if (task.actualTimeSpent) {
+        totalSeconds += parseTimeToSeconds(task.actualTimeSpent);
+      }
+    });
+
+    const entry: LeaderboardEntry = {
+      timestamp: Date.now(),
+      totalTimeSeconds: totalSeconds,
+      schnitzel: stats.schnitzel,
+      kartoffel: stats.kartoffel,
+      completedTasksCount: completedTasks.length,
+    };
+
+    this.saveLeaderboardEntry(entry);
+
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const name = 'Player';
+    const body = `entry.1860183935=${encodeURIComponent(name)}` +
+                 `&entry.564282981=${stats.schnitzel}` +
+                 `&entry.1079317865=${stats.kartoffel}` +
+                 `&entry.985590604=${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+    try {
+      await firstValueFrom(
+        this.http.post(environment.leaderboardUrl, body, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        })
+      );
+      console.log('Leaderboard entry saved to Google Forms');
+    } catch (error) {
+      console.error('Failed to save to Google Forms, kept in localStorage:', error);
+    }
+  }
+
+  clearCurrentRun(): void {
+    this.tasksSignal.set([...DEFAULT_TASKS]);
+    this.saveTasks();
+  }
+
+  getLeaderboard(): LeaderboardEntry[] {
+    return this.loadLeaderboard();
   }
 }

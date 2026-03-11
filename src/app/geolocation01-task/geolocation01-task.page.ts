@@ -28,14 +28,16 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private taskService = inject(TaskService);
   private gpsWatchId?: string;
+  private timerInterval?: ReturnType<typeof setInterval>;
   private startTime = Date.now();
+  private previousElapsed = 0;
+  private penaltySeconds = 15 * 60;
 
   task = {
     index: 1,
     total: 6,
     title: 'Geo location 1/2',
     description: 'Begebe dich an einen bestimmten Standort',
-    timer: '03:43 MIN',
     bonusTime: '+5m',
     hint: 'Begebe dich vor die Migros',
   };
@@ -43,6 +45,31 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
   userLatitude = signal<number | null>(null);
   userLongitude = signal<number | null>(null);
   metersToTarget = signal<number | null>(null);
+  currentElapsed = signal(0);
+
+  remainingSeconds = computed(() => {
+    return Math.max(0, this.penaltySeconds - this.currentElapsed());
+  });
+
+  timerDisplay = computed(() => {
+    const remaining = this.remainingSeconds();
+    const minutes = Math.floor(remaining / 60);
+    const seconds = remaining % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  });
+
+  timerColor = computed(() => {
+    const percentage = this.remainingSeconds() / this.penaltySeconds;
+    if (percentage > 0.5) {
+      return '#ff9500';
+    } else if (percentage > 0.25) {
+      const r = 255;
+      const g = Math.floor(149 + (255 - 149) * (percentage - 0.25) / 0.25);
+      return `rgb(${r}, ${g}, 0)`;
+    } else {
+      return '#ff0000';
+    }
+  });
 
   locationStatus = computed(() => {
     const meters = this.metersToTarget();
@@ -59,6 +86,16 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
   });
 
   async ngOnInit(): Promise<void> {
+    const taskData = this.taskService.getTaskById(5);
+    this.previousElapsed = taskData?.timeElapsed ?? 0;
+    this.startTime = Date.now();
+    this.currentElapsed.set(this.previousElapsed);
+
+    this.timerInterval = setInterval(() => {
+      const elapsed = this.previousElapsed + Math.floor((Date.now() - this.startTime) / 1000);
+      this.currentElapsed.set(elapsed);
+    }, 1000);
+
     this.gpsWatchId = await Geolocation.watchPosition(
       { enableHighAccuracy: true },
       (position, error) => {
@@ -89,20 +126,33 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
     if (this.gpsWatchId) {
       Geolocation.clearWatch({ id: this.gpsWatchId });
     }
+    clearInterval(this.timerInterval);
   }
 
-  private onDestinationReached(): void {
+  private async onDestinationReached(): Promise<void> {
     Geolocation.clearWatch({ id: this.gpsWatchId! });
     const timeSpent = this.calculateTimeSpent();
-    this.taskService.completeTask(4, timeSpent);
-    setTimeout(() => this.router.navigate(['/tasks']), 1500);
+    const allCompleted = await this.taskService.completeTask(5, timeSpent);
+    setTimeout(() => {
+      if (allCompleted) {
+        this.router.navigate(['/tasks/finish']);
+      } else {
+        this.router.navigate(['/tasks']);
+      }
+    }, 1500);
   }
 
   private calculateTimeSpent(): string {
-    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-    const minutes = Math.floor(elapsed / 60);
-    const seconds = elapsed % 60;
+    const currentElapsed = Math.floor((Date.now() - this.startTime) / 1000);
+    const totalElapsed = this.previousElapsed + currentElapsed;
+    const minutes = Math.floor(totalElapsed / 60);
+    const seconds = totalElapsed % 60;
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+
+  private getTotalElapsedSeconds(): number {
+    const currentElapsed = Math.floor((Date.now() - this.startTime) / 1000);
+    return this.previousElapsed + currentElapsed;
   }
 
   private calculateDistance(
@@ -119,12 +169,18 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
     return Math.sqrt(deltaLatMeters ** 2 + deltaLngMeters ** 2);
   }
 
-  skip(): void {
-    this.taskService.skipTask(4);
-    this.router.navigate(['/tasks']);
+  async skip(): Promise<void> {
+    const allCompleted = await this.taskService.skipTask(5);
+    if (allCompleted) {
+      this.router.navigate(['/tasks/finish']);
+    } else {
+      this.router.navigate(['/tasks']);
+    }
   }
 
   cancel(): void {
+    const totalElapsed = this.getTotalElapsedSeconds();
+    this.taskService.pauseTask(5, totalElapsed);
     this.router.navigate(['/tasks']);
   }
 }

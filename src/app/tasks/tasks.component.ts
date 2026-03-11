@@ -30,11 +30,7 @@ export class TasksComponent {
   playerName = this.nameService.playerName;
 
   tasks = this.taskService.tasks;
-
-  progressStats: ProgressStats = {
-    schnitzel: 2,
-    kartoffel: 2,
-  };
+  progressStats = this.taskService.progressStats;
 
   completedTasksCount = computed(
     () => this.tasks().filter((t) => t.status === 'completed').length,

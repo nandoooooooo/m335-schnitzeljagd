@@ -1,4 +1,4 @@
-<app-page-header title="Ergebnisse" />
+<app-page-header title="Ergebnisse"/>
 
 <ion-content [fullscreen]="true">
 
@@ -7,24 +7,24 @@
     <div class="hero">
       <div class="trophy">🏆</div>
       <h1>Geschafft, <span class="accent">{{ playerName }}!</span></h1>
-      <p class="text-secondary">Gesamtzeit: {{ totalTime }}</p>
+      <p class="text-secondary">Gesamtzeit: {{ totalTime() }}</p>
     </div>
 
     <section class="stats-card">
       <div class="stat">
-        <span class="stat__value accent-orange">{{ schnitzelCount }}</span>
+        <span class="stat__value accent-orange">{{ schnitzelCount() }}</span>
         <span class="stat__icon">🥩</span>
         <span class="stat__label text-secondary">Schnitzel</span>
       </div>
       <div class="stat-divider"></div>
       <div class="stat">
-        <span class="stat__value accent-orange">{{ kartoffelCount }}</span>
+        <span class="stat__value accent-orange">{{ kartoffelCount() }}</span>
         <span class="stat__icon">🥔</span>
         <span class="stat__label text-secondary">Kartoffeln</span>
       </div>
       <div class="stat-divider"></div>
       <div class="stat">
-        <span class="stat__value accent-orange">{{ totalPoints }}</span>
+        <span class="stat__value accent-orange">{{ totalPoints() }}</span>
         <span class="stat__icon">⭐</span>
         <span class="stat__label text-secondary">Punkte</span>
       </div>
@@ -33,7 +33,7 @@
     <div class="section-label text-secondary">AUFGABEN</div>
 
     <div class="task-list">
-      @for (t of taskResults; track t.label) {
+      @for (t of taskResults(); track t.label) {
         <div class="task-row">
           <span class="task-row__icon">{{ t.icon }}</span>
           <span class="task-row__label">{{ t.label }}</span>
