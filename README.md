@@ -5,13 +5,19 @@ together with my habibis leandro and timo
 
 
 # TODO
-## Implement:
-- Finalize Finale-Overviwew
-- Implement Result Kartoffel per Task
+## Implement: *High Prio*
+- Implement Saving Runs to local storage and load from local storage to display on leaderboard
+- Clear Run state after completion
+- Create Testplan
 - implement Sound / Vibrate on completed task
-- Displaying on leaderboard
-- Implement Saving runs in local storage
 
-## Fix
+## Fix *Bugs/Issues*
 - Buggy Geolocation 02
+- Fix API-post
+- Kartoffel soll -50 punkte *nicht +50 geben
 - Spieler kann leer erfast werden
+
+## Ideas *Optional*
+- Include Run-Time in Score-Calculation
+- Change Time limit color from white to red
+- Optimise Task details
