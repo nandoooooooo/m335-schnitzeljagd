@@ -1,4 +1,4 @@
-<app-page-header title="Aufgabe 4" />
+<app-page-header [title]="'Aufgabe ' + task.index"/>
 
 <ion-content [fullscreen]="true">
 
@@ -13,7 +13,8 @@
       <p class="text-secondary">{{ task.description }}</p>
     </section>
 
-    <section class="task-card location-card" [class.location-card--done]="isFlipped()" style="transform: rotate(180deg);">
+    <section class="task-card location-card" [class.location-card--done]="isFlipped()"
+             style="transform: rotate(180deg);">
       <div class="location-left">
         <div class="pin-wrapper">{{ isFlipped() ? '✅' : '🔄' }}</div>
         <div>

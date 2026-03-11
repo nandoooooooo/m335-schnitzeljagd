@@ -1,18 +1,11 @@
-import {
-  Component,
-  inject,
-  signal,
-  computed,
-  OnInit,
-  OnDestroy,
-} from '@angular/core';
-import { Router } from '@angular/router';
-import { Motion } from '@capacitor/motion';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { IonContent, IonButton } from '@ionic/angular/standalone';
-import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import { Capacitor, PluginListenerHandle } from '@capacitor/core';
-import { TaskService } from '../services/task.service';
+import {Component, computed, inject, OnDestroy, OnInit, signal,} from '@angular/core';
+import {Router} from '@angular/router';
+import {Motion} from '@capacitor/motion';
+import {Haptics, ImpactStyle} from '@capacitor/haptics';
+import {IonButton, IonContent} from '@ionic/angular/standalone';
+import {PageHeaderComponent} from '../components/page-header/page-header.component';
+import {Capacitor, PluginListenerHandle} from '@capacitor/core';
+import {TaskService} from '../services/task.service';
 
 @Component({
   selector: 'app-rotate-task',
@@ -107,7 +100,7 @@ export class FlipTaskPage implements OnInit, OnDestroy {
   }
 
   private async onFlipDetected(): Promise<void> {
-    await Haptics.impact({ style: ImpactStyle.Medium });
+    await Haptics.impact({style: ImpactStyle.Medium});
     const timeSpent = this.calculateTimeSpent();
     const allCompleted = await this.taskService.completeTask(4, timeSpent);
     setTimeout(() => {
@@ -133,7 +126,8 @@ export class FlipTaskPage implements OnInit, OnDestroy {
   }
 
   async skip(): Promise<void> {
-    const allCompleted = await this.taskService.skipTask(4);
+    const totalElapsed = this.getTotalElapsedSeconds();
+    const allCompleted = await this.taskService.skipTask(4, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {

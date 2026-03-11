@@ -12,6 +12,7 @@ import { NameService } from '../../name-service';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
 const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
+
 // const APP_STATE_KEY = 'schnitzeljagd_app_state';
 
 function parseTimeToSeconds(timeString: string): number {
@@ -313,12 +314,11 @@ export class TaskService {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    const name = this.nameService.playerName();
-    const body =
-      `entry.1860183935=${encodeURIComponent(name)}` +
-      `&entry.564282981=${stats.schnitzel}` +
-      `&entry.1079317865=${stats.kartoffel}` +
-      `&entry.985590604=${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const name = 'Player';
+    const body = `entry.1860183935=${encodeURIComponent(name)}` +
+                 `&entry.564282981=${stats.schnitzel}` +
+                 `&entry.1079317865=${stats.kartoffel}` +
+                 `&entry.985590604=${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
     try {
       await firstValueFrom(

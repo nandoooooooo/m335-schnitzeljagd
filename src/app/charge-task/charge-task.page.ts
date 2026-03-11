@@ -1,4 +1,4 @@
-import {Component, inject, OnDestroy, OnInit, signal, computed} from '@angular/core';
+import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
 import {Router} from '@angular/router';
 import {BatteryInfo, Device} from '@capacitor/device';
 import {IonButton, IonContent,} from '@ionic/angular/standalone';
@@ -22,7 +22,7 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
   private penaltySeconds = 10 * 60;
 
   task = {
-    index: 5,
+    index: 1,
     total: 6,
     title: 'Stromversorgung',
     description: 'Versorge das Gerät mit Strom',
@@ -119,7 +119,8 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
   }
 
   async skip(): Promise<void> {
-    const allCompleted = await this.taskService.skipTask(1);
+    const totalElapsed = this.getTotalElapsedSeconds();
+    const allCompleted = await this.taskService.skipTask(1, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {

@@ -1,9 +1,9 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { Network } from '@capacitor/network';
-import { IonContent, IonButton } from '@ionic/angular/standalone';
-import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import { TaskService } from '../services/task.service';
+import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {Router} from '@angular/router';
+import {Network} from '@capacitor/network';
+import {IonButton, IonContent} from '@ionic/angular/standalone';
+import {PageHeaderComponent} from '../components/page-header/page-header.component';
+import {TaskService} from '../services/task.service';
 
 @Component({
   selector: 'app-wlan-task',
@@ -22,7 +22,7 @@ export class WlanTaskPage implements OnInit, OnDestroy {
   private penaltySeconds = 5 * 60;
 
   task = {
-    index: 6,
+    index: 2,
     total: 6,
     title: 'Das tut WLAN',
     description: 'Verbinde dich mit dem Wlan',
@@ -125,7 +125,8 @@ export class WlanTaskPage implements OnInit, OnDestroy {
   }
 
   async skip(): Promise<void> {
-    const allCompleted = await this.taskService.skipTask(2);
+    const totalElapsed = this.getTotalElapsedSeconds();
+    const allCompleted = await this.taskService.skipTask(2, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {

@@ -1,20 +1,11 @@
-import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import {
-  CapacitorBarcodeScanner,
-  CapacitorBarcodeScannerTypeHint,
-} from '@capacitor/barcode-scanner';
-import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import { TaskService } from '../services/task.service';
+import {Component, computed, inject, OnDestroy, OnInit, signal} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
+import {IonButton, IonContent, IonHeader,} from '@ionic/angular/standalone';
+import {CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint,} from '@capacitor/barcode-scanner';
+import {PageHeaderComponent} from '../components/page-header/page-header.component';
+import {TaskService} from '../services/task.service';
 
 @Component({
   selector: 'app-qrcode-task',
@@ -143,7 +134,8 @@ export class QrTaskPage implements OnInit, OnDestroy {
   }
 
   async skip(): Promise<void> {
-    const allCompleted = await this.taskService.skipTask(3);
+    const totalElapsed = this.getTotalElapsedSeconds();
+    const allCompleted = await this.taskService.skipTask(3, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {
