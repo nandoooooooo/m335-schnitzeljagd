@@ -104,6 +104,7 @@ export class TaskService {
     const completedTasks = this.tasksSignal().filter(
       (t) => t.status === 'completed' && t.actualTimeSpent,
     );
+
     let schnitzel = 0;
     let kartoffel = 0;
 
@@ -158,6 +159,7 @@ export class TaskService {
           if (nextTask && nextTask.status === 'locked') {
             return updatedTask;
           }
+
           return updatedTask;
         }
 
@@ -168,14 +170,15 @@ export class TaskService {
         return task;
       }),
     );
+
     this.saveTasks();
 
     const allCompleted = this.tasksSignal().every(
       (t) => t.status === 'completed',
     );
+
     if (allCompleted) {
       await this.saveToLeaderboard();
-      this.clearCurrentRun();
       return true;
     }
 
@@ -210,14 +213,15 @@ export class TaskService {
         return task;
       }),
     );
+
     this.saveTasks();
 
     const allCompleted = this.tasksSignal().every(
       (t) => t.status === 'completed',
     );
+
     if (allCompleted) {
       await this.saveToLeaderboard();
-      this.clearCurrentRun();
       return true;
     }
 

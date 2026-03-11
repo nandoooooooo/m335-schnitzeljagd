@@ -7,7 +7,7 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
   @Override
   public void onWindowFocusChanged(boolean hasFocus) {
-    super.onWindowFocusChanged(hasFocus); 
+    super.onWindowFocusChanged(hasFocus);
     if (hasFocus) {
       getWindow().getDecorView().setSystemUiVisibility(
         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |

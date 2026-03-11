@@ -43,9 +43,13 @@ export class FinishPage {
     return this.nameService.playerName();
   }
 
-  completedTasks = computed(() => {
-    return this.taskService.tasks().filter((t) => t.status === 'completed');
-  });
+  schnitzelCount = computed(() => this.taskService.progressStats().schnitzel);
+
+  kartoffelCount = computed(() => this.taskService.progressStats().kartoffel);
+
+  completedTasks = computed(() =>
+    this.taskService.tasks().filter((t) => t.status === 'completed'),
+  );
 
   progressStats = this.taskService.progressStats;
 
@@ -56,17 +60,16 @@ export class FinishPage {
         totalSeconds += parseTimeToSeconds(task.actualTimeSpent);
       }
     });
-
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} min`;
   });
 
-  schnitzelCount = computed(() => this.progressStats().schnitzel);
-  kartoffelCount = computed(() => this.progressStats().kartoffel);
-
   totalPoints = computed(() => {
-    return this.schnitzelCount() * 100 + this.kartoffelCount() * 50;
+    return (
+      this.taskService.progressStats().schnitzel * 100 +
+      this.taskService.progressStats().kartoffel * 50
+    );
   });
 
   taskResults = computed((): TaskResult[] => {
@@ -74,11 +77,9 @@ export class FinishPage {
       const timeSpentSeconds = task.actualTimeSpent
         ? parseTimeToSeconds(task.actualTimeSpent)
         : 0;
-      const penaltyTimeSeconds = parseTimeToSeconds(task.timeUntilPenalty);
-
+      const penaltySeconds = parseTimeToSeconds(task.timeUntilPenalty);
       const schnitzel = task.actualTimeSpent ? 1 : 0;
-      const kartoffel = timeSpentSeconds > penaltyTimeSeconds ? 1 : 0;
-
+      const kartoffel = timeSpentSeconds > penaltySeconds ? 1 : 0;
       const formattedTime = task.actualTimeSpent
         ? `${task.actualTimeSpent} MIN`
         : 'übersprungen';
@@ -100,5 +101,10 @@ export class FinishPage {
   newRound(): void {
     this.taskService.resetTasks();
     this.router.navigate(['/start-page']);
+  }
+
+  constructor() {
+    console.log('progressStats:', this.taskService.progressStats());
+    console.log('tasks:', this.taskService.tasks());
   }
 }
