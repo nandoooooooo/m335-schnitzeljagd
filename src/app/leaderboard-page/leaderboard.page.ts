@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // ⬅️ fehlt noch
+import { Router } from '@angular/router';
 
 import {
   IonContent,
-  IonHeader,
   IonToolbar,
   IonTitle,
   IonList,
@@ -17,6 +16,7 @@ import { PageHeaderComponent } from '../components/page-header/page-header.compo
 interface Player {
   name: string;
   schnitzel: number;
+  kartoffel: number;
   points: number;
   isMe?: boolean;
 }
@@ -43,11 +43,11 @@ export class LeaderboardPage {
   constructor(private router: Router) {}
 
   players: Player[] = [
-    { name: 'Anna K.', schnitzel: 12, points: 480 },
-    { name: 'Tom B.', schnitzel: 10, points: 390 },
-    { name: 'Lena M.', schnitzel: 9, points: 355 },
-    { name: 'Yuki S.', schnitzel: 8, points: 310 },
-    { name: 'Max M.', schnitzel: 4, points: 180, isMe: true },
+    { name: 'Anna K.', schnitzel: 12, kartoffel: 2, points: 480 },
+    { name: 'Tom B.', schnitzel: 10, kartoffel: 1, points: 390 },
+    { name: 'Lena M.', schnitzel: 9, kartoffel: 0, points: 355 },
+    { name: 'Yuki S.', schnitzel: 8, kartoffel: 3, points: 310 },
+    { name: 'Max M.', schnitzel: 4, kartoffel: 2, points: 180, isMe: true },
   ];
 
   goToStart() {
