@@ -1,18 +1,12 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-// import {App} from '@capacitor/app';
-import {
-  LeaderboardEntry,
-  ProgressStats,
-  Task,
-} from '../models/task.interface';
-import { environment } from '../../environments/environment';
-import { NameService } from '../../name-service';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {firstValueFrom} from 'rxjs';
+import {LeaderboardEntry, ProgressStats, Task,} from '../models/task.interface';
+import {environment} from '../../environments/environment';
+import {NameService} from '../../name-service';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
 const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
-// const APP_STATE_KEY = 'schnitzeljagd_app_state';
 
 function parseTimeToSeconds(timeString: string): number {
   const [minutes, seconds] = timeString.split(':').map(Number);
@@ -90,12 +84,6 @@ export class TaskService {
   private tasksSignal = signal<Task[]>(this.loadTasks());
   private nameService = inject(NameService);
 
-  constructor() {
-    // Hard-close detection disabled for now - was interfering with page reloads
-    // this.checkAppStateOnLaunch();
-    // this.setupAppLifecycleListeners();
-  }
-
   get tasks() {
     return this.tasksSignal.asReadonly();
   }
@@ -121,7 +109,7 @@ export class TaskService {
       }
     });
 
-    return { schnitzel, kartoffel };
+    return {schnitzel, kartoffel};
   });
 
   private loadTasks(): Task[] {
@@ -164,7 +152,7 @@ export class TaskService {
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return { ...task, status: 'active' as const };
+          return {...task, status: 'active' as const};
         }
 
         return task;
@@ -188,13 +176,13 @@ export class TaskService {
   pauseTask(id: number, elapsedSeconds: number): void {
     this.tasksSignal.update((tasks) =>
       tasks.map((task) =>
-        task.id === id ? { ...task, timeElapsed: elapsedSeconds } : task,
+        task.id === id ? {...task, timeElapsed: elapsedSeconds} : task,
       ),
     );
     this.saveTasks();
   }
 
-  async skipTask(id: number): Promise<boolean> {
+  async skipTask(id: number, elapsedSeconds: number): Promise<boolean> {
     this.tasksSignal.update((tasks) =>
       tasks.map((task) => {
         if (task.id === id) {
@@ -202,12 +190,12 @@ export class TaskService {
             ...task,
             status: 'completed' as const,
             actualTimeSpent: undefined,
-            timeElapsed: undefined,
+            timeElapsed: elapsedSeconds,
           };
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return { ...task, status: 'active' as const };
+          return {...task, status: 'active' as const};
         }
 
         return task;
@@ -230,7 +218,7 @@ export class TaskService {
 
   updateTaskStatus(id: number, status: Task['status']): void {
     this.tasksSignal.update((tasks) =>
-      tasks.map((task) => (task.id === id ? { ...task, status } : task)),
+      tasks.map((task) => (task.id === id ? {...task, status} : task)),
     );
     this.saveTasks();
   }
@@ -239,38 +227,6 @@ export class TaskService {
     this.tasksSignal.set([...DEFAULT_TASKS]);
     this.saveTasks();
   }
-
-  // Disabled: was interfering with page reloads
-  // private setupAppLifecycleListeners(): void {
-  //   App.addListener('appStateChange', (state) => {
-  //     if (!state.isActive) {
-  //       localStorage.setItem(APP_STATE_KEY, JSON.stringify({
-  //         wasActive: true,
-  //         timestamp: Date.now()
-  //       }));
-  //     }
-  //   });
-  // }
-
-  // Disabled: was interfering with page reloads
-  // private checkAppStateOnLaunch(): void {
-  //   const appStateStr = localStorage.getItem(APP_STATE_KEY);
-  //   if (appStateStr) {
-  //     try {
-  //       const appState = JSON.parse(appStateStr);
-  //       const completedTasks = this.tasksSignal().filter(t => t.status === 'completed');
-  //       const allTasksCompleted = completedTasks.length === this.tasksSignal().length;
-  //
-  //       if (appState.wasActive && !allTasksCompleted) {
-  //         this.clearCurrentRun();
-  //       }
-  //
-  //       localStorage.removeItem(APP_STATE_KEY);
-  //     } catch (e) {
-  //       console.error('Failed to parse app state:', e);
-  //     }
-  //   }
-  // }
 
   private loadLeaderboard(): LeaderboardEntry[] {
     const stored = localStorage.getItem(LEADERBOARD_KEY);
@@ -317,9 +273,8 @@ export class TaskService {
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
 
-    const name = this.nameService.playerName();
-    const body =
-      `entry.1860183935=${encodeURIComponent(name)}` +
+    const name = 'Player';
+    const body = `entry.1860183935=${encodeURIComponent(name)}` +
       `&entry.564282981=${stats.schnitzel}` +
       `&entry.1079317865=${stats.kartoffel}` +
       `&entry.985590604=${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;

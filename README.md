@@ -6,16 +6,12 @@ together with my habibis leandro and timo
 
 # TODO
 ## Implement:
-- Finish Task Overview
-- Implement Finale-Overviwew
-- Implement Ion-Alert when starting a run
-- Implement Timer per Task and Timer overall
-- Implement Result Schnitzel / Schnitzel and Kartoffel / Nothing per Task 
-- Implement Naming and Saving runs / displaying on leaderboard
+- Finalize Finale-Overviwew
+- Implement Result Kartoffel per Task
+- implement Sound / Vibrate on completed task
+- Displaying on leaderboard
+- Implement Saving runs in local storage
 
 ## Fix
-- Delete unused Permission
-- Permission Removal
 - Buggy Geolocation 02
-- No Vibrate on Completion
-  
+- Spieler kann leer erfast werden

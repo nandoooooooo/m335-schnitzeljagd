@@ -1,16 +1,9 @@
-import {
-  Component,
-  inject,
-  signal,
-  computed,
-  OnInit,
-  OnDestroy,
-} from '@angular/core';
-import { Router } from '@angular/router';
-import { Geolocation } from '@capacitor/geolocation';
-import { IonContent, IonButton } from '@ionic/angular/standalone';
-import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import { TaskService } from '../services/task.service';
+import {Component, computed, inject, OnDestroy, OnInit, signal,} from '@angular/core';
+import {Router} from '@angular/router';
+import {Geolocation} from '@capacitor/geolocation';
+import {IonButton, IonContent} from '@ionic/angular/standalone';
+import {PageHeaderComponent} from '../components/page-header/page-header.component';
+import {TaskService} from '../services/task.service';
 
 const DESTINATION_LATITUDE = 47.02760311889452;
 const DESTINATION_LONGITUDE = 8.300860554120902;
@@ -34,7 +27,7 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
   private penaltySeconds = 15 * 60;
 
   task = {
-    index: 1,
+    index: 5,
     total: 6,
     title: 'Geo location 1/2',
     description: 'Begebe dich an einen bestimmten Standort',
@@ -97,7 +90,7 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
     }, 1000);
 
     this.gpsWatchId = await Geolocation.watchPosition(
-      { enableHighAccuracy: true },
+      {enableHighAccuracy: true},
       (position, error) => {
         if (error || !position) return;
 
@@ -124,13 +117,13 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.gpsWatchId) {
-      Geolocation.clearWatch({ id: this.gpsWatchId });
+      Geolocation.clearWatch({id: this.gpsWatchId});
     }
     clearInterval(this.timerInterval);
   }
 
   private async onDestinationReached(): Promise<void> {
-    Geolocation.clearWatch({ id: this.gpsWatchId! });
+    Geolocation.clearWatch({id: this.gpsWatchId!});
     const timeSpent = this.calculateTimeSpent();
     const allCompleted = await this.taskService.completeTask(5, timeSpent);
     setTimeout(() => {
@@ -170,7 +163,8 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
   }
 
   async skip(): Promise<void> {
-    const allCompleted = await this.taskService.skipTask(5);
+    const totalElapsed = this.getTotalElapsedSeconds();
+    const allCompleted = await this.taskService.skipTask(5, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {

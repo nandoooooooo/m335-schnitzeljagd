@@ -43,22 +43,19 @@ export class TasksComponent {
   );
 
   totalTime = computed(() => {
-    const completedTasks = this.tasks().filter((t) => t.status === 'completed');
-    let totalMinutes = 0;
-    let totalSeconds = 0;
-
-    completedTasks.forEach((task) => {
+    const totalElapsedSeconds = this.tasks().reduce((sum, task) => {
       if (task.actualTimeSpent) {
-        const [minutes, seconds] = task.actualTimeSpent.split(':').map(Number);
-        totalMinutes += minutes;
-        totalSeconds += seconds;
+        return sum + this.parseTimeToSeconds(task.actualTimeSpent);
       }
-    });
 
-    totalMinutes += Math.floor(totalSeconds / 60);
-    totalSeconds = totalSeconds % 60;
+      if (task.timeElapsed) {
+        return sum + task.timeElapsed;
+      }
 
-    return `${String(totalMinutes).padStart(2, '0')}:${String(totalSeconds).padStart(2, '0')}`;
+      return sum;
+    }, 0);
+
+    return this.formatSeconds(totalElapsedSeconds);
   });
 
   onTaskClick(task: Task): void {
@@ -76,5 +73,17 @@ export class TasksComponent {
 
     this.taskService.clearCurrentRun();
     this.router.navigate(['/start-page']);
+  }
+
+  private parseTimeToSeconds(timeString: string): number {
+    const [minutes, seconds] = timeString.split(':').map(Number);
+    return minutes * 60 + seconds;
+  }
+
+  private formatSeconds(totalSeconds: number): string {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }
 }
