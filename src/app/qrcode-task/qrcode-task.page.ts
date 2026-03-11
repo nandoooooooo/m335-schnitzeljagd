@@ -77,6 +77,6 @@ export class QrTaskPage {
   }
 
   cancel(): void {
-    this.router.navigate(['/start-page']);
+    this.router.navigate(['/tasks']);
   }
 }

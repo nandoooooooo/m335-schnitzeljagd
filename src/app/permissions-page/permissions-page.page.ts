@@ -99,7 +99,7 @@ export class PermissionsPage implements OnInit {
   }
 
   async onWeiter(): Promise<void> {
-    this.router.navigate(['/geolocation01-task']);
+    this.router.navigate(['/tasks']);
   }
 
   private updatePermission(key: Permission['key'], granted: boolean): void {

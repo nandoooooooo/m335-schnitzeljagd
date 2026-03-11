@@ -109,6 +109,6 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
   }
 
   cancel(): void {
-    this.router.navigate(['/start-page']);
+    this.router.navigate(['/tasks']);
   }
 }
