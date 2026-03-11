@@ -1,43 +1,112 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Router } from '@angular/router';
+import { Geolocation } from '@capacitor/geolocation';
+import { Camera } from '@capacitor/camera';
+import { Motion } from '@capacitor/motion';
+import { Capacitor } from '@capacitor/core';
 import {
-  IonButton, IonCard,
-  IonContent, IonFooter,
-  IonHeader, IonImg,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonText,
-  IonTitle, IonToggle,
-  IonToolbar
+  IonContent,
+  IonHeader,
+  IonFooter,
+  IonToolbar,
+  IonButton,
+  IonToggle,
 } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
 
+interface Permission {
+  key: 'location' | 'camera' | 'motion';
+  icon: string;
+  label: string;
+  granted: boolean;
+}
+
 @Component({
-  selector: 'app-permissions-page',
+  selector: 'app-permissions',
   templateUrl: './permissions-page.page.html',
   styleUrls: ['./permissions-page.page.scss'],
   standalone: true,
   imports: [
     IonContent,
     IonHeader,
-    IonTitle,
-    IonToolbar,
-    CommonModule,
-    FormsModule,
-    IonText,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonToggle,
     IonFooter,
+    IonToolbar,
     IonButton,
-    IonImg,
-    IonCard,
+    IonToggle,
     PageHeaderComponent,
   ],
 })
-export class PermissionsPagePage {
-  constructor() {}
+export class PermissionsPage implements OnInit {
+  private router = inject(Router);
+
+  permissions = signal<Permission[]>([
+    { key: 'location', icon: '📍', label: 'Standort', granted: false },
+    { key: 'camera', icon: '📷', label: 'Kamera', granted: false },
+    { key: 'motion', icon: '🎮', label: 'Bewegungssensor', granted: false },
+  ]);
+
+  async ngOnInit(): Promise<void> {
+    await this.checkAllPermissions();
+  }
+
+  async checkAllPermissions(): Promise<void> {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const [locStatus, camStatus] = await Promise.all([
+      Geolocation.checkPermissions(),
+      Camera.checkPermissions(),
+    ]);
+
+    this.updatePermission('location', locStatus.location === 'granted');
+    this.updatePermission('camera', camStatus.camera === 'granted');
+    this.updatePermission('motion', true); // Android braucht keine explizite Permission
+  }
+
+  async onToggle(key: Permission['key'], newValue: boolean): Promise<void> {
+    if (newValue) {
+      await this.requestPermission(key);
+    } else {
+      this.updatePermission(key, false); // rot
+    }
+  }
+
+  async requestPermission(key: Permission['key']): Promise<void> {
+    if (!Capacitor.isNativePlatform()) {
+      this.updatePermission(key, true);
+      return;
+    }
+    try {
+      switch (key) {
+        case 'location': {
+          const r = await Geolocation.requestPermissions();
+          this.updatePermission('location', r.location === 'granted');
+          break;
+        }
+        case 'camera': {
+          const r = await Camera.requestPermissions();
+          this.updatePermission('camera', r.camera === 'granted');
+          break;
+        }
+        case 'motion': {
+          await Motion.addListener('accel', () => {});
+          this.updatePermission('motion', true);
+          break;
+        }
+      }
+    } catch (e) {
+      console.error(`Permission request failed for ${key}:`, e);
+    }
+  }
+
+  async onWeiter(): Promise<void> {
+    this.router.navigate(['/geolocation01-task']);
+  }
+
+  private updatePermission(key: Permission['key'], granted: boolean): void {
+    this.permissions.update((list) =>
+      list.map((p) => (p.key === key ? { ...p, granted } : p)),
+    );
+  }
+
+  allGranted = computed(() => this.permissions().every((p) => p.granted));
 }

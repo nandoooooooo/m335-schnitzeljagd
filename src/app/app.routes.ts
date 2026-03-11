@@ -15,7 +15,7 @@ export const routes: Routes = [
     path: 'permissions',
     loadComponent: () =>
       import('./permissions-page/permissions-page.page').then(
-        (m) => m.PermissionsPagePage,
+        (m) => m.PermissionsPage,
       ),
   },
 
@@ -47,6 +47,7 @@ export const routes: Routes = [
   },
   {
     path: 'tasks',
-    loadComponent: () => import('./tasks/tasks.component').then((m) => m.TasksComponent),
+    loadComponent: () =>
+      import('./tasks/tasks.component').then((m) => m.TasksComponent),
   },
 ];

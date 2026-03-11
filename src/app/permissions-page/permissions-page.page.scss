@@ -1,0 +1,55 @@
+ion-content {
+  --padding-start: 16px;
+  --padding-end:   16px;
+  --padding-top:   16px;
+}
+
+.description {
+  margin-bottom: 24px;
+}
+
+.perm-list {
+  display:        flex;
+  flex-direction: column;
+  gap:            12px;
+}
+
+.perm-card {
+  display:         flex;
+  align-items:     center;
+  gap:             16px;
+  padding:         16px;
+  border-radius:   var(--ion-border-radius);
+  background:      var(--ion-card-background);
+  border:          1.5px solid transparent;
+  transition:      border-color 0.2s ease;
+
+  &--granted { border-color: #4CAF50; }
+  &--denied  { border-color: var(--ion-color-danger, #f44336); }
+}
+
+.perm-icon {
+  width:           44px;
+  height:          44px;
+  border-radius:   var(--ion-border-radius-small);
+  background:      rgba(255, 255, 255, 0.06);
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  font-size:       22px;
+  flex-shrink:     0;
+}
+
+.perm-label {
+  flex:        1;
+  font-weight: 700;
+  font-size:   16px;
+  color:       var(--ion-text-color);
+}
+
+ion-footer ion-toolbar {
+  --padding-start:  16px;
+  --padding-end:    16px;
+  --padding-top:    8px;
+  --padding-bottom: 8px;
+}

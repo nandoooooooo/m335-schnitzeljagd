@@ -1,28 +1,32 @@
-  <ion-header [translucent]="true">
-    <app-page-header title="Berechtigungen" />
-    <ion-toolbar>
-      <ion-title>Berechtigungen</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header [translucent]="true">
+  <app-page-header title="Berechtigungen" />
+</ion-header>
 
-  <ion-content [fullscreen]="true">
-    <ion-text>Folgende Berechtigungen werden von uns benötigt
-      um eine unbeschwerte Schnitzeljagd zu erleben
-    </ion-text>
-    <ion-list>
-      <ion-item>
-        <ion-card>
-          <ion-img slot="start"></ion-img>
-          <ion-label>Standort</ion-label>
-          <ion-toggle slot="end"></ion-toggle>
-        </ion-card>
-      </ion-item>
-    </ion-list>
-  </ion-content>
+<ion-content [fullscreen]="true">
 
-  <ion-footer>
-    <ion-toolbar>
-      <ion-button>Weiter</ion-button>
-    </ion-toolbar>
-  </ion-footer>
+  <p class="description text-secondary">
+    Folgende Berechtigungen werden von uns benötigt
+    um eine unbeschwerte Schnitzeljagd zu erleben
+  </p>
 
+  <div class="perm-list">
+    @for (perm of permissions(); track perm.key) {
+      <div class="perm-card" [class.perm-card--granted]="perm.granted" [class.perm-card--denied]="!perm.granted">
+        <div class="perm-icon">{{ perm.icon }}</div>
+        <span class="perm-label">{{ perm.label }}</span>
+        <ion-toggle
+          [checked]="perm.granted"
+          (ionChange)="onToggle(perm.key, $event.detail.checked)" />
+      </div>
+    }
+  </div>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button expand="block" [disabled]="!allGranted()" (click)="onWeiter()">
+      Weiter
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>
