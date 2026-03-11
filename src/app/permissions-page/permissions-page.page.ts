@@ -58,7 +58,6 @@ export class PermissionsPage implements OnInit {
 
     this.updatePermission('location', locStatus.location === 'granted');
     this.updatePermission('camera', camStatus.camera === 'granted');
-    this.updatePermission('motion', true); // Android braucht keine explizite Permission
   }
 
   async onToggle(key: Permission['key'], newValue: boolean): Promise<void> {
@@ -82,7 +81,9 @@ export class PermissionsPage implements OnInit {
           break;
         }
         case 'camera': {
-          const r = await Camera.requestPermissions();
+          const r = await Camera.requestPermissions({
+            permissions: ['camera'],
+          });
           this.updatePermission('camera', r.camera === 'granted');
           break;
         }
