@@ -1,4 +1,4 @@
-import {Routes} from '@angular/router';
+import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
@@ -35,11 +35,15 @@ export const routes: Routes = [
       },
       {
         path: 'charge',
-        loadComponent: () => import('./charge-task/charge-task.page').then(m => m.ChargeTaskPage)
+        loadComponent: () =>
+          import('./charge-task/charge-task.page').then(
+            (m) => m.ChargeTaskPage,
+          ),
       },
       {
         path: 'wlan',
-        loadComponent: () => import('./wlan-task/wlan-task.page').then(m => m.WlanTaskPage)
+        loadComponent: () =>
+          import('./wlan-task/wlan-task.page').then((m) => m.WlanTaskPage),
       },
       {
         path: 'qrcode',
@@ -60,10 +64,11 @@ export const routes: Routes = [
             (m) => m.Geolocation02TaskPage,
           ),
       },
+      {
+        path: 'flip',
+        loadComponent: () =>
+          import('./flip-task/flip-task.page').then((m) => m.FlipTaskPage),
+      },
     ],
-  },
-  {
-    path: 'flip-task',
-    loadComponent: () => import('./flip-task/flip-task.page').then( m => m.FlipTaskPage)
   },
 ];
