@@ -1,42 +1,114 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+  Component,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
+import { Router } from '@angular/router';
+import { Geolocation } from '@capacitor/geolocation';
+import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
+
+const TARGET_DISTANCE_METERS = 20;
+const DEGREES_TO_METERS = 111_000;
 
 @Component({
   selector: 'app-geolocation02-task',
   templateUrl: './geolocation02-task.page.html',
   styleUrls: ['./geolocation02-task.page.scss'],
   standalone: true,
-  imports: [
-    IonContent,
-    IonButton,
-    CommonModule,
-    FormsModule,
-    PageHeaderComponent,
-  ],
+  imports: [IonContent, IonButton, PageHeaderComponent],
 })
-export class Geolocation02TaskPage {
+export class Geolocation02TaskPage implements OnInit, OnDestroy {
+  private router = inject(Router);
+  private gpsWatchId?: string;
+
+  private startLatitude?: number;
+  private startLongitude?: number;
+
   task = {
     index: 2,
     total: 6,
     title: 'Geo location 2/2',
-    description: 'Begebe dich an einen bestimmten standort',
+    description: 'Begebe dich an einen bestimmten Standort',
     timer: '03:43 MIN',
-
-    distanceLabel: 'Jetzige Distanz',
-    distance: '0.5m',
-    targetDistance: '20m',
-
     bonusTime: '+5m',
-
-    hint: 'Laufe 20m',
+    hint: 'Laufe 20m in irgendeine Richtung',
   };
+
+  distanceMoved = signal<number>(0);
+
+  locationStatus = computed(() => {
+    const moved = this.distanceMoved();
+    if (!this.startLatitude) return 'Startpunkt wird gesetzt...';
+    if (moved >= TARGET_DISTANCE_METERS) return 'Ziel erreicht ✅';
+    return `${moved.toFixed(1)}m / ${TARGET_DISTANCE_METERS}m`;
+  });
+
+  async ngOnInit(): Promise<void> {
+    this.gpsWatchId = await Geolocation.watchPosition(
+      { enableHighAccuracy: true },
+      (position, error) => {
+        if (error || !position) return;
+
+        const currentLatitude = position.coords.latitude;
+        const currentLongitude = position.coords.longitude;
+
+        // Startpunkt beim ersten Fix setzen
+        if (!this.startLatitude || !this.startLongitude) {
+          this.startLatitude = currentLatitude;
+          this.startLongitude = currentLongitude;
+          return;
+        }
+
+        const movedMeters = this.calculateDistance(
+          this.startLatitude,
+          this.startLongitude,
+          currentLatitude,
+          currentLongitude,
+        );
+
+        this.distanceMoved.set(movedMeters);
+
+        if (movedMeters >= TARGET_DISTANCE_METERS) {
+          this.onTargetReached();
+        }
+      },
+    );
+  }
+
+  ngOnDestroy(): void {
+    if (this.gpsWatchId) {
+      Geolocation.clearWatch({ id: this.gpsWatchId });
+    }
+  }
+
+  private onTargetReached(): void {
+    Geolocation.clearWatch({ id: this.gpsWatchId! });
+    setTimeout(() => this.router.navigate(['/task-03']), 1500);
+  }
+
+  private calculateDistance(
+    fromLatitude: number,
+    fromLongitude: number,
+    toLatitude: number,
+    toLongitude: number,
+  ): number {
+    const deltaLatMeters = (toLatitude - fromLatitude) * DEGREES_TO_METERS;
+    const deltaLngMeters =
+      (toLongitude - fromLongitude) *
+      DEGREES_TO_METERS *
+      Math.cos((fromLatitude * Math.PI) / 180);
+    return Math.sqrt(deltaLatMeters ** 2 + deltaLngMeters ** 2);
+  }
+
+  skip(): void {
+    this.router.navigate(['/task-03']);
+  }
+
+  cancel(): void {
+    this.router.navigate(['/start-page']);
+  }
 }
