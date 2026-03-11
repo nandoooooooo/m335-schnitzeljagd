@@ -1,0 +1,64 @@
+<app-page-header title="Ergebnisse" />
+
+<ion-content [fullscreen]="true">
+
+  <div class="finish-page">
+
+    <div class="hero">
+      <div class="trophy">🏆</div>
+      <h1>Geschafft, <span class="accent">{{ playerName }}!</span></h1>
+      <p class="text-secondary">Gesamtzeit: {{ totalTime }}</p>
+    </div>
+
+    <section class="stats-card">
+      <div class="stat">
+        <span class="stat__value accent-orange">{{ schnitzelCount }}</span>
+        <span class="stat__icon">🥩</span>
+        <span class="stat__label text-secondary">Schnitzel</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat__value accent-orange">{{ kartoffelCount }}</span>
+        <span class="stat__icon">🥔</span>
+        <span class="stat__label text-secondary">Kartoffeln</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat__value accent-orange">{{ totalPoints }}</span>
+        <span class="stat__icon">⭐</span>
+        <span class="stat__label text-secondary">Punkte</span>
+      </div>
+    </section>
+
+    <div class="section-label text-secondary">AUFGABEN</div>
+
+    <div class="task-list">
+      @for (t of taskResults; track t.label) {
+        <div class="task-row">
+          <span class="task-row__icon">{{ t.icon }}</span>
+          <span class="task-row__label">{{ t.label }}</span>
+          <span class="task-row__time text-secondary">{{ t.time }}</span>
+          <div class="task-row__rewards">
+            @if (t.schnitzel > 0) {
+              <span class="reward-pill">🥩 +{{ t.schnitzel }}</span>
+            }
+            @if (t.kartoffel > 0) {
+              <span class="reward-pill">🥔 +{{ t.kartoffel }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="actions">
+      <ion-button expand="block" class="btn-leaderboard" (click)="goToLeaderboard()">
+        🏅 Zum Leaderboard
+      </ion-button>
+      <ion-button expand="block" fill="outline" (click)="newRound()">
+        Neue Runde starten
+      </ion-button>
+    </div>
+
+  </div>
+
+</ion-content>

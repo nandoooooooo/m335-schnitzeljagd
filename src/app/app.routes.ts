@@ -69,6 +69,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./flip-task/flip-task.page').then((m) => m.FlipTaskPage),
       },
+      {
+        path: 'finish',
+        loadComponent: () =>
+          import('./finish/finish.page').then((m) => m.FinishPage),
+      },
     ],
   },
 ];
