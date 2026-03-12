@@ -1,25 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import {
   IonContent,
-  IonToolbar,
-  IonTitle,
   IonList,
   IonItem,
   IonButton,
 } from '@ionic/angular/standalone';
-import { PageHeaderComponent } from '../components/page-header/page-header.component';
 
-interface Player {
-  name: string;
-  schnitzel: number;
-  kartoffel: number;
-  points: number;
-  isMe?: boolean;
-}
+import { PageHeaderComponent } from '../components/page-header/page-header.component';
+import { TaskService } from '../services/task.service';
 
 @Component({
   selector: 'app-leaderboard-page',
@@ -28,8 +20,6 @@ interface Player {
   standalone: true,
   imports: [
     IonContent,
-    IonToolbar,
-    IonTitle,
     IonList,
     IonItem,
     IonButton,
@@ -39,16 +29,29 @@ interface Player {
   ],
 })
 export class LeaderboardPage {
-  // eslint-disable-next-line @angular-eslint/prefer-inject
-  constructor(private router: Router) {}
+  private router = inject(Router);
+  private taskService = inject(TaskService);
 
-  players: Player[] = [
-    { name: 'Anna K.', schnitzel: 12, kartoffel: 2, points: 480 },
-    { name: 'Tom B.', schnitzel: 10, kartoffel: 1, points: 390 },
-    { name: 'Lena M.', schnitzel: 9, kartoffel: 0, points: 355 },
-    { name: 'Yuki S.', schnitzel: 8, kartoffel: 3, points: 310 },
-    { name: 'Max M.', schnitzel: 4, kartoffel: 2, points: 180, isMe: true },
-  ];
+  players = computed(() => {
+    return this.taskService
+      .getLeaderboard()
+      .filter((entry) => entry.name && entry.name.trim() !== '')
+      .map((entry) => ({
+        name: entry.name,
+        schnitzel: entry.schnitzel,
+        kartoffel: entry.kartoffel,
+        points: entry.schnitzel * 100 - entry.kartoffel * 50,
+        totalTimeSeconds: entry.totalTimeSeconds,
+        timestamp: entry.timestamp,
+      }))
+      .sort((a, b) => {
+        if (b.points !== a.points) {
+          return b.points - a.points;
+        }
+
+        return a.totalTimeSeconds - b.totalTimeSeconds;
+      });
+  });
 
   goToStart() {
     this.router.navigate(['/start-page']);

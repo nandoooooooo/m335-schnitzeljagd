@@ -1,9 +1,13 @@
-import {computed, inject, Injectable, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {firstValueFrom} from 'rxjs';
-import {LeaderboardEntry, ProgressStats, Task,} from '../models/task.interface';
-import {environment} from '../../environments/environment';
-import {NameService} from '../../name-service';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import {
+  LeaderboardEntry,
+  ProgressStats,
+  Task,
+} from '../models/task.interface';
+import { environment } from '../../environments/environment';
+import { NameService } from '../../name-service';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
 const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
@@ -109,7 +113,7 @@ export class TaskService {
       }
     });
 
-    return {schnitzel, kartoffel};
+    return { schnitzel, kartoffel };
   });
 
   private loadTasks(): Task[] {
@@ -152,7 +156,7 @@ export class TaskService {
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return {...task, status: 'active' as const};
+          return { ...task, status: 'active' as const };
         }
 
         return task;
@@ -176,7 +180,7 @@ export class TaskService {
   pauseTask(id: number, elapsedSeconds: number): void {
     this.tasksSignal.update((tasks) =>
       tasks.map((task) =>
-        task.id === id ? {...task, timeElapsed: elapsedSeconds} : task,
+        task.id === id ? { ...task, timeElapsed: elapsedSeconds } : task,
       ),
     );
     this.saveTasks();
@@ -195,7 +199,7 @@ export class TaskService {
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return {...task, status: 'active' as const};
+          return { ...task, status: 'active' as const };
         }
 
         return task;
@@ -218,7 +222,7 @@ export class TaskService {
 
   updateTaskStatus(id: number, status: Task['status']): void {
     this.tasksSignal.update((tasks) =>
-      tasks.map((task) => (task.id === id ? {...task, status} : task)),
+      tasks.map((task) => (task.id === id ? { ...task, status } : task)),
     );
     this.saveTasks();
   }
@@ -263,6 +267,7 @@ export class TaskService {
 
     const entry: LeaderboardEntry = {
       timestamp: Date.now(),
+      name: this.nameService.playerName(),
       totalTimeSeconds: totalSeconds,
       schnitzel: stats.schnitzel,
       kartoffel: stats.kartoffel,
@@ -276,7 +281,8 @@ export class TaskService {
     const seconds = totalSeconds % 60;
 
     const playerName = this.nameService.playerName();
-    const body = `entry.1860183935=${encodeURIComponent(playerName)}` +
+    const body =
+      `entry.1860183935=${encodeURIComponent(playerName)}` +
       `&entry.564282981=${stats.schnitzel}` +
       `&entry.1079317865=${stats.kartoffel}` +
       `&entry.985590604=${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;

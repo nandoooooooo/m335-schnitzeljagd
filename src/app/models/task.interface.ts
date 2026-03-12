@@ -18,6 +18,7 @@ export interface ProgressStats {
 
 export interface LeaderboardEntry {
   timestamp: number;
+  name: string;
   totalTimeSeconds: number;
   schnitzel: number;
   kartoffel: number;
