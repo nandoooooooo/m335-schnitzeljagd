@@ -12,7 +12,7 @@ import {
   IonToggle,
 } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import { AlertController } from '@ionic/angular/standalone';
+import { AlertController, ToastController } from '@ionic/angular/standalone';
 import { NameService } from '../../name-service';
 import { AndroidSettings, NativeSettings } from 'capacitor-native-settings';
 
@@ -41,6 +41,7 @@ interface Permission {
 export class PermissionsPage implements OnInit {
   private router = inject(Router);
   private alertController = inject(AlertController);
+  private toastController = inject(ToastController);
   private nameService = inject(NameService);
 
   permissions = signal<Permission[]>([
@@ -102,15 +103,37 @@ export class PermissionsPage implements OnInit {
   async onWeiter(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Dein Name',
-      inputs: [{ name: 'name', type: 'text', placeholder: 'Max Mustermann' }],
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Max Mustermann',
+          attributes: { maxlength: 30 },
+        },
+      ],
       buttons: [
         {
           text: 'Weiter',
-          handler: (data: { name: string }) => {
+          handler: async (data: { name: string }) => {
             const name = data?.name?.trim();
-            if (name) {
-              this.nameService.playerName.set(name);
+
+            if (!name) {
+              await this.showToast('Bitte gib einen Namen ein');
+              return false;
             }
+
+            if (name.length < 2) {
+              await this.showToast('Name muss mindestens 2 Zeichen lang sein');
+              return false;
+            }
+
+            if (name.length > 30) {
+              await this.showToast('Name darf maximal 30 Zeichen lang sein');
+              return false;
+            }
+
+            this.nameService.playerName.set(name);
+            return true;
           },
         },
       ],
@@ -118,6 +141,16 @@ export class PermissionsPage implements OnInit {
     await alert.present();
     await alert.onDidDismiss();
     this.router.navigate(['/tasks']);
+  }
+
+  private async showToast(message: string): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom',
+      color: 'danger',
+    });
+    await toast.present();
   }
 
   private updatePermission(key: Permission['key'], granted: boolean): void {

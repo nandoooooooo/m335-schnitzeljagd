@@ -15,10 +15,10 @@ together with my habibis leandro and timo
 
 ## Fix *Bugs/Issues*
 
-- Buggy Geolocation 02
-- Fix API-post
-- Kartoffel soll -50 punkte *nicht +50 geben
-- Spieler kann leer erfast werden
+- Buggy Geolocation 02 -> to be tested
+- Fix API-post -> ask teacher if POST worked
+- Kartoffel soll -50 punkte *nicht +50 geben -> to be tested
+- Spieler kann leer erfast werden -> fixed
 
 ## Ideas *Optional*
 

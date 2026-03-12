@@ -60,6 +60,8 @@ export class FinishPage {
     this.completedTasks().forEach((task) => {
       if (task.actualTimeSpent) {
         totalSeconds += parseTimeToSeconds(task.actualTimeSpent);
+      } else if (task.timeElapsed !== undefined) {
+        totalSeconds += task.timeElapsed;
       }
     });
     const minutes = Math.floor(totalSeconds / 60);
@@ -69,7 +71,7 @@ export class FinishPage {
 
   totalPoints = computed(() => {
     return (
-      this.taskService.progressStats().schnitzel * 100 +
+      this.taskService.progressStats().schnitzel * 100 -
       this.taskService.progressStats().kartoffel * 50
     );
   });
@@ -80,8 +82,8 @@ export class FinishPage {
         ? parseTimeToSeconds(task.actualTimeSpent)
         : 0;
       const penaltySeconds = parseTimeToSeconds(task.timeUntilPenalty);
-      const schnitzel = task.actualTimeSpent ? 1 : 0;
-      const kartoffel = timeSpentSeconds > penaltySeconds ? 1 : 0;
+      const schnitzel = task.actualTimeSpent && timeSpentSeconds <= penaltySeconds ? 1 : 0;
+      const kartoffel = task.actualTimeSpent && timeSpentSeconds > penaltySeconds ? 1 : 0;
       const formattedTime = task.actualTimeSpent
         ? `${task.actualTimeSpent} MIN`
         : 'übersprungen';

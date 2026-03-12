@@ -9,6 +9,9 @@ import {HapticService} from '../services/haptic.service';
 
 const TARGET_DISTANCE_METERS = 20;
 const DEGREES_TO_METERS = 111_000;
+const MAX_ACCURACY_METERS = 20;
+const STABILIZATION_DELAY_MS = 3000;
+const MIN_TIME_ELAPSED_SECONDS = 5;
 
 @Component({
   selector: 'app-geolocation02-task',
@@ -30,6 +33,10 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
 
   private startLatitude?: number;
   private startLongitude?: number;
+  private startPositionTimestamp?: number;
+  private bestAccuracy = Infinity;
+  private bestAccuracyPosition?: { lat: number; lng: number };
+  private safetyTimeoutId?: ReturnType<typeof setTimeout>;
 
   task = {
     index: 6,
@@ -42,6 +49,8 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
 
   distanceMoved = signal<number>(0);
   currentElapsed = signal(0);
+  gpsAccuracy = signal<number | null>(null);
+  stabilizationSecondsRemaining = signal<number | null>(null);
 
   remainingSeconds = computed(() => {
     return Math.max(0, this.penaltySeconds - this.currentElapsed());
@@ -69,9 +78,25 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
 
   locationStatus = computed(() => {
     const moved = this.distanceMoved();
-    if (!this.startLatitude) return 'Startpunkt wird gesetzt...';
+    const accuracy = this.gpsAccuracy();
+    const secondsRemaining = this.stabilizationSecondsRemaining();
+
+    if (!this.startLatitude) {
+      if (accuracy === null) {
+        return 'Warte auf GPS Signal...';
+      }
+      if (accuracy > MAX_ACCURACY_METERS) {
+        return `GPS zu ungenau (±${accuracy.toFixed(0)}m) - gehe nach draussen`;
+      }
+      if (secondsRemaining !== null) {
+        return `Stabilisierung... ${secondsRemaining}s (±${accuracy.toFixed(0)}m)`;
+      }
+      return `Startpunkt wird gesetzt... (±${accuracy.toFixed(0)}m)`;
+    }
     if (moved >= TARGET_DISTANCE_METERS) return 'Ziel erreicht ✅';
-    return `${moved.toFixed(1)}m / ${TARGET_DISTANCE_METERS}m`;
+
+    const accuracyText = accuracy !== null ? ` (±${accuracy.toFixed(0)}m)` : '';
+    return `${moved.toFixed(1)}m / ${TARGET_DISTANCE_METERS}m${accuracyText}`;
   });
 
   async ngOnInit(): Promise<void> {
@@ -88,17 +113,67 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
     this.gpsWatchId = await Geolocation.watchPosition(
       {enableHighAccuracy: true},
       (position, error) => {
-        if (error || !position) return;
+        if (error || !position) {
+          console.log('[GPS] Error or no position:', error);
+          return;
+        }
 
         const currentLatitude = position.coords.latitude;
         const currentLongitude = position.coords.longitude;
+        const accuracy = position.coords.accuracy ?? Infinity;
 
-        // Startpunkt beim ersten Fix setzen
+        console.log('[GPS] Reading:', {accuracy, lat: currentLatitude.toFixed(5), lng: currentLongitude.toFixed(5)});
+
+        this.gpsAccuracy.set(accuracy);
+
         if (!this.startLatitude || !this.startLongitude) {
-          this.startLatitude = currentLatitude;
-          this.startLongitude = currentLongitude;
+          if (accuracy > MAX_ACCURACY_METERS) {
+            console.log('[GPS] Accuracy too low, skipping');
+            return;
+          }
+
+          if (!this.startPositionTimestamp) {
+            console.log('[GPS] First good reading, starting stabilization');
+            this.startPositionTimestamp = Date.now();
+            this.bestAccuracy = accuracy;
+            this.bestAccuracyPosition = {lat: currentLatitude, lng: currentLongitude};
+            this.stabilizationSecondsRemaining.set(Math.ceil(STABILIZATION_DELAY_MS / 1000));
+
+            this.safetyTimeoutId = setTimeout(() => {
+              if (!this.startLatitude && this.bestAccuracyPosition) {
+                console.log('[GPS] Safety timeout - forcing start position');
+                this.startLatitude = this.bestAccuracyPosition.lat;
+                this.startLongitude = this.bestAccuracyPosition.lng;
+                this.stabilizationSecondsRemaining.set(null);
+              }
+            }, 5000);
+
+            return;
+          }
+
+          const timeSinceFirstGoodReading = Date.now() - this.startPositionTimestamp;
+          const secondsRemaining = Math.ceil((STABILIZATION_DELAY_MS - timeSinceFirstGoodReading) / 1000);
+          this.stabilizationSecondsRemaining.set(Math.max(0, secondsRemaining));
+
+          if (accuracy < this.bestAccuracy) {
+            console.log('[GPS] New best accuracy:', accuracy);
+            this.bestAccuracy = accuracy;
+            this.bestAccuracyPosition = {lat: currentLatitude, lng: currentLongitude};
+          }
+
+          if (timeSinceFirstGoodReading >= STABILIZATION_DELAY_MS && this.bestAccuracyPosition) {
+            console.log('[GPS] Stabilization complete, setting start position:', this.bestAccuracyPosition);
+            this.startLatitude = this.bestAccuracyPosition.lat;
+            this.startLongitude = this.bestAccuracyPosition.lng;
+            this.stabilizationSecondsRemaining.set(null);
+            if (this.safetyTimeoutId) {
+              clearTimeout(this.safetyTimeoutId);
+            }
+          }
           return;
         }
+
+        console.log('[GPS] Tracking movement');
 
         const movedMeters = this.calculateDistance(
           this.startLatitude,
@@ -107,9 +182,12 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
           currentLongitude,
         );
 
+        console.log('[GPS] Distance moved:', movedMeters.toFixed(1), 'm');
         this.distanceMoved.set(movedMeters);
 
-        if (movedMeters >= TARGET_DISTANCE_METERS) {
+        const timeElapsedSinceStart = this.getTotalElapsedSeconds();
+        if (movedMeters >= TARGET_DISTANCE_METERS && timeElapsedSinceStart >= MIN_TIME_ELAPSED_SECONDS) {
+          console.log('[GPS] Target reached!');
           this.onTargetReached();
         }
       },
@@ -121,6 +199,9 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
       Geolocation.clearWatch({id: this.gpsWatchId});
     }
     clearInterval(this.timerInterval);
+    if (this.safetyTimeoutId) {
+      clearTimeout(this.safetyTimeoutId);
+    }
   }
 
   private async onTargetReached(): Promise<void> {

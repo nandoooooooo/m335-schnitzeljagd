@@ -11,6 +11,7 @@ const DESTINATION_LATITUDE = 47.02760311889452;
 const DESTINATION_LONGITUDE = 8.300860554120902;
 const ARRIVAL_RADIUS_METERS = 5;
 const DEGREES_TO_METERS = 111_000;
+const MAX_ACCURACY_METERS = 20;
 
 @Component({
   selector: 'app-geolocation01-task',
@@ -43,6 +44,7 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
   userLongitude = signal<number | null>(null);
   metersToTarget = signal<number | null>(null);
   currentElapsed = signal(0);
+  gpsAccuracy = signal<number | null>(null);
 
   remainingSeconds = computed(() => {
     return Math.max(0, this.penaltySeconds - this.currentElapsed());
@@ -70,9 +72,18 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
 
   locationStatus = computed(() => {
     const meters = this.metersToTarget();
-    if (meters === null) return 'Standort wird gesucht...';
+    const accuracy = this.gpsAccuracy();
+
+    if (meters === null) {
+      if (accuracy !== null && accuracy > MAX_ACCURACY_METERS) {
+        return `GPS zu ungenau (±${accuracy.toFixed(0)}m) - gehe nach draußen`;
+      }
+      return 'Standort wird gesucht...';
+    }
     if (meters <= ARRIVAL_RADIUS_METERS) return 'Ziel erreicht ✅';
-    return `${Math.round(meters)}m zum Ziel`;
+
+    const accuracyText = accuracy !== null ? ` (±${accuracy.toFixed(0)}m)` : '';
+    return `${Math.round(meters)}m zum Ziel${accuracyText}`;
   });
 
   formattedCoordinates = computed(() => {
@@ -100,6 +111,13 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
 
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
+        const accuracy = position.coords.accuracy ?? Infinity;
+
+        this.gpsAccuracy.set(accuracy);
+
+        if (accuracy > MAX_ACCURACY_METERS) {
+          return;
+        }
 
         this.userLatitude.set(userLat);
         this.userLongitude.set(userLng);
