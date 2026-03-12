@@ -4,6 +4,8 @@ import {Geolocation} from '@capacitor/geolocation';
 import {IonButton, IonContent} from '@ionic/angular/standalone';
 import {PageHeaderComponent} from '../components/page-header/page-header.component';
 import {TaskService} from '../services/task.service';
+import {AudioService} from '../services/audio.service';
+import {HapticService} from '../services/haptic.service';
 
 const DESTINATION_LATITUDE = 47.02760311889452;
 const DESTINATION_LONGITUDE = 8.300860554120902;
@@ -20,6 +22,8 @@ const DEGREES_TO_METERS = 111_000;
 export class Geolocation01TaskPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private taskService = inject(TaskService);
+  private audioService = inject(AudioService);
+  private hapticService = inject(HapticService);
   private gpsWatchId?: string;
   private timerInterval?: ReturnType<typeof setInterval>;
   private startTime = Date.now();
@@ -126,6 +130,8 @@ export class Geolocation01TaskPage implements OnInit, OnDestroy {
     Geolocation.clearWatch({id: this.gpsWatchId!});
     const timeSpent = this.calculateTimeSpent();
     const allCompleted = await this.taskService.completeTask(5, timeSpent);
+    await this.audioService.playTaskDone();
+    await this.hapticService.taskSuccess();
     setTimeout(() => {
       if (allCompleted) {
         this.router.navigate(['/tasks/finish']);

@@ -4,6 +4,7 @@ import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { PageHeaderComponent } from '../components/page-header/page-header.component';
 import { TaskService } from '../services/task.service';
 import { NameService } from '../../name-service';
+import { HapticService } from '../services/haptic.service';
 
 interface TaskResult {
   icon: string;
@@ -38,6 +39,7 @@ export class FinishPage {
   private router = inject(Router);
   private taskService = inject(TaskService);
   private nameService = inject(NameService);
+  private hapticService = inject(HapticService);
 
   get playerName(): string {
     return this.nameService.playerName();
@@ -106,5 +108,9 @@ export class FinishPage {
   constructor() {
     console.log('progressStats:', this.taskService.progressStats());
     console.log('tasks:', this.taskService.tasks());
+  }
+
+  ionViewDidEnter(): void {
+    this.hapticService.gameComplete();
   }
 }

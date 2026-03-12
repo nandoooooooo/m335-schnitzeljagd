@@ -1,11 +1,12 @@
 import {Component, computed, inject, OnDestroy, OnInit, signal,} from '@angular/core';
 import {Router} from '@angular/router';
 import {Motion} from '@capacitor/motion';
-import {Haptics, ImpactStyle} from '@capacitor/haptics';
 import {IonButton, IonContent} from '@ionic/angular/standalone';
 import {PageHeaderComponent} from '../components/page-header/page-header.component';
 import {Capacitor, PluginListenerHandle} from '@capacitor/core';
 import {TaskService} from '../services/task.service';
+import {AudioService} from '../services/audio.service';
+import {HapticService} from '../services/haptic.service';
 
 @Component({
   selector: 'app-rotate-task',
@@ -17,6 +18,8 @@ import {TaskService} from '../services/task.service';
 export class FlipTaskPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private taskService = inject(TaskService);
+  private audioService = inject(AudioService);
+  private hapticService = inject(HapticService);
   private motionListener?: PluginListenerHandle;
   private timerInterval?: ReturnType<typeof setInterval>;
   private alreadyDetected = false;
@@ -100,9 +103,10 @@ export class FlipTaskPage implements OnInit, OnDestroy {
   }
 
   private async onFlipDetected(): Promise<void> {
-    await Haptics.impact({style: ImpactStyle.Medium});
     const timeSpent = this.calculateTimeSpent();
     const allCompleted = await this.taskService.completeTask(4, timeSpent);
+    await this.audioService.playTaskDone();
+    await this.hapticService.taskSuccess();
     setTimeout(() => {
       if (allCompleted) {
         this.router.navigate(['/tasks/finish']);

@@ -4,6 +4,8 @@ import {Network} from '@capacitor/network';
 import {IonButton, IonContent} from '@ionic/angular/standalone';
 import {PageHeaderComponent} from '../components/page-header/page-header.component';
 import {TaskService} from '../services/task.service';
+import {AudioService} from '../services/audio.service';
+import {HapticService} from '../services/haptic.service';
 
 @Component({
   selector: 'app-wlan-task',
@@ -15,6 +17,8 @@ import {TaskService} from '../services/task.service';
 export class WlanTaskPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private taskService = inject(TaskService);
+  private audioService = inject(AudioService);
+  private hapticService = inject(HapticService);
   private interval?: ReturnType<typeof setInterval>;
   private timerInterval?: ReturnType<typeof setInterval>;
   private startTime = Date.now();
@@ -94,6 +98,8 @@ export class WlanTaskPage implements OnInit, OnDestroy {
         clearInterval(this.interval);
         const timeSpent = this.calculateTimeSpent();
         const allCompleted = await this.taskService.completeTask(2, timeSpent);
+        await this.audioService.playTaskDone();
+        await this.hapticService.taskSuccess();
         setTimeout(() => {
           if (allCompleted) {
             this.router.navigate(['/tasks/finish']);

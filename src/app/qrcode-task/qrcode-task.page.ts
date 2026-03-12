@@ -6,6 +6,8 @@ import {IonButton, IonContent, IonHeader,} from '@ionic/angular/standalone';
 import {CapacitorBarcodeScanner, CapacitorBarcodeScannerTypeHint,} from '@capacitor/barcode-scanner';
 import {PageHeaderComponent} from '../components/page-header/page-header.component';
 import {TaskService} from '../services/task.service';
+import {AudioService} from '../services/audio.service';
+import {HapticService} from '../services/haptic.service';
 
 @Component({
   selector: 'app-qrcode-task',
@@ -24,6 +26,8 @@ import {TaskService} from '../services/task.service';
 export class QrTaskPage implements OnInit, OnDestroy {
   private router = inject(Router);
   private taskService = inject(TaskService);
+  private audioService = inject(AudioService);
+  private hapticService = inject(HapticService);
   private startTime = Date.now();
   private previousElapsed = 0;
   private penaltySeconds = 5 * 60;
@@ -102,6 +106,8 @@ export class QrTaskPage implements OnInit, OnDestroy {
         this.task.scanStatus = 'Richtiger QR-Code erkannt';
         const timeSpent = this.calculateTimeSpent();
         const allCompleted = await this.taskService.completeTask(3, timeSpent);
+        await this.audioService.playTaskDone();
+        await this.hapticService.taskSuccess();
         if (allCompleted) {
           this.router.navigate(['/tasks/finish']);
         } else {
