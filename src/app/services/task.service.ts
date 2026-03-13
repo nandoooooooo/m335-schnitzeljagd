@@ -1,9 +1,8 @@
 import {computed, inject, Injectable, signal} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {firstValueFrom} from 'rxjs';
 import {LeaderboardEntry, ProgressStats, Task,} from '../models/task.interface';
 import {environment} from '../../environments/environment';
 import {NameService} from '../../name-service';
+import {CapacitorHttp} from '@capacitor/core';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
 const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
@@ -20,7 +19,7 @@ const DEFAULT_TASKS: Task[] = [
     description: 'Versorge das Gerät mit Strom',
     ionicIconName: 'battery-charging',
     relativeUrl: '/tasks/charge',
-    timeUntilPenalty: '10:00',
+    timeUntilPenalty: '01:00',
     status: 'active',
     hint: 'Schliesse dein Handy an ein Ladekabel an',
   },
@@ -30,7 +29,7 @@ const DEFAULT_TASKS: Task[] = [
     description: 'Verbinde dich mit dem Wlan',
     ionicIconName: 'wifi',
     relativeUrl: '/tasks/wlan',
-    timeUntilPenalty: '05:00',
+    timeUntilPenalty: '02:00',
     status: 'locked',
     hint: 'Verbinde dich mit dem Wlan aus Kursraum 6 und trenne die Verbindung im anschluss wieder',
   },
@@ -40,7 +39,7 @@ const DEFAULT_TASKS: Task[] = [
     description: 'Finde den versteckten QR-Code und scanne ihn.',
     ionicIconName: 'qr-code',
     relativeUrl: '/tasks/qrcode',
-    timeUntilPenalty: '05:00',
+    timeUntilPenalty: '02:00',
     status: 'locked',
     hint: 'Der Code befindet sich im Kursraum 6.',
   },
@@ -50,7 +49,7 @@ const DEFAULT_TASKS: Task[] = [
     description: 'Drehe das Handy um',
     ionicIconName: 'phone-portrait',
     relativeUrl: '/tasks/flip',
-    timeUntilPenalty: '05:00',
+    timeUntilPenalty: '00:35',
     status: 'locked',
     hint: 'Kannst du das Lesen?',
   },
@@ -60,7 +59,7 @@ const DEFAULT_TASKS: Task[] = [
     description: 'Begebe dich an einen bestimmten Standort',
     ionicIconName: 'location',
     relativeUrl: '/tasks/geolocation-1',
-    timeUntilPenalty: '15:00',
+    timeUntilPenalty: '05:00',
     status: 'locked',
     hint: 'Begebe dich vor die Migros',
   },
@@ -70,7 +69,7 @@ const DEFAULT_TASKS: Task[] = [
     description: 'Begebe dich an einen bestimmten Standort',
     ionicIconName: 'navigate',
     relativeUrl: '/tasks/geolocation-2',
-    timeUntilPenalty: '15:00',
+    timeUntilPenalty: '01:00',
     status: 'locked',
     hint: 'Laufe 20m in irgendeine Richtung',
   },
@@ -80,7 +79,6 @@ const DEFAULT_TASKS: Task[] = [
   providedIn: 'root',
 })
 export class TaskService {
-  private http = inject(HttpClient);
   private tasksSignal = signal<Task[]>(this.loadTasks());
   private nameService = inject(NameService);
 
@@ -284,13 +282,13 @@ export class TaskService {
       `&entry.985590604=${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
     try {
-      await firstValueFrom(
-        this.http.post(environment.leaderboardUrl, body, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }),
-      );
+      await CapacitorHttp.post({
+        url: environment.leaderboardUrl,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        data: body,
+      });
       console.log('Leaderboard entry saved to Google Forms');
     } catch (error) {
       console.log(
