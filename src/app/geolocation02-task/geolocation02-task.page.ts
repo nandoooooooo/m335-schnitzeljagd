@@ -6,6 +6,7 @@ import {PageHeaderComponent} from '../components/page-header/page-header.compone
 import {TaskService} from '../services/task.service';
 import {AudioService} from '../services/audio.service';
 import {HapticService} from '../services/haptic.service';
+import {Task} from '../models/task.interface';
 
 const TARGET_DISTANCE_METERS = 20;
 const DEGREES_TO_METERS = 111_000;
@@ -30,6 +31,7 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
   private startTime = Date.now();
   private previousElapsed = 0;
   private penaltySeconds = 15 * 60;
+  private readonly TASK_ID = 6;
 
   private startLatitude?: number;
   private startLongitude?: number;
@@ -38,14 +40,7 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
   private bestAccuracyPosition?: { lat: number; lng: number };
   private safetyTimeoutId?: ReturnType<typeof setTimeout>;
 
-  task = {
-    index: 6,
-    total: 6,
-    title: 'Geo location 2/2',
-    description: 'Begebe dich an einen bestimmten Standort',
-    bonusTime: '+5m',
-    hint: 'Laufe 20m in irgendeine Richtung',
-  };
+  task!: Task & { index: number; total: number };
 
   distanceMoved = signal<number>(0);
   currentElapsed = signal(0);
@@ -100,7 +95,14 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
   });
 
   async ngOnInit(): Promise<void> {
-    const taskData = this.taskService.getTaskById(6);
+    const taskData = this.taskService.getTaskById(this.TASK_ID);
+    if (taskData) {
+      this.task = {
+        ...taskData,
+        index: this.TASK_ID,
+        total: this.taskService.tasks().length,
+      };
+    }
     this.previousElapsed = taskData?.timeElapsed ?? 0;
     this.startTime = Date.now();
     this.currentElapsed.set(this.previousElapsed);
@@ -207,7 +209,7 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
   private async onTargetReached(): Promise<void> {
     Geolocation.clearWatch({id: this.gpsWatchId!});
     const timeSpent = this.calculateTimeSpent();
-    const allCompleted = await this.taskService.completeTask(6, timeSpent);
+    const allCompleted = await this.taskService.completeTask(this.TASK_ID, timeSpent);
     await this.audioService.playTaskDone();
     await this.hapticService.taskSuccess();
     setTimeout(() => {
@@ -248,7 +250,7 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
 
   async skip(): Promise<void> {
     const totalElapsed = this.getTotalElapsedSeconds();
-    const allCompleted = await this.taskService.skipTask(6, totalElapsed);
+    const allCompleted = await this.taskService.skipTask(this.TASK_ID, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {
@@ -258,7 +260,7 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
 
   cancel(): void {
     const totalElapsed = this.getTotalElapsedSeconds();
-    this.taskService.pauseTask(6, totalElapsed);
+    this.taskService.pauseTask(this.TASK_ID, totalElapsed);
     this.router.navigate(['/tasks']);
   }
 }

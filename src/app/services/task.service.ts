@@ -1,13 +1,9 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import {
-  LeaderboardEntry,
-  ProgressStats,
-  Task,
-} from '../models/task.interface';
-import { environment } from '../../environments/environment';
-import { NameService } from '../../name-service';
+import {computed, inject, Injectable, signal} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {firstValueFrom} from 'rxjs';
+import {LeaderboardEntry, ProgressStats, Task,} from '../models/task.interface';
+import {environment} from '../../environments/environment';
+import {NameService} from '../../name-service';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
 const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
@@ -20,63 +16,63 @@ function parseTimeToSeconds(timeString: string): number {
 const DEFAULT_TASKS: Task[] = [
   {
     id: 1,
-    title: 'Akku laden',
-    description: 'Lade dein Gerät auf',
+    title: 'Stromversorgung',
+    description: 'Versorge das Gerät mit Strom',
     ionicIconName: 'battery-charging',
     relativeUrl: '/tasks/charge',
     timeUntilPenalty: '10:00',
     status: 'active',
-    hint: 'Finde eine Steckdose',
+    hint: 'Schliesse dein Handy an ein Ladekabel an',
   },
   {
     id: 2,
-    title: 'WLAN verbinden',
-    description: 'Verbinde dich mit dem WLAN',
+    title: 'Das tut WLAN',
+    description: 'Verbinde dich mit dem Wlan',
     ionicIconName: 'wifi',
     relativeUrl: '/tasks/wlan',
     timeUntilPenalty: '05:00',
     status: 'locked',
-    hint: 'Suche nach verfügbaren Netzwerken',
+    hint: 'Verbinde dich mit dem Wlan aus Kursraum 6 und trenne die Verbindung im anschluss wieder',
   },
   {
     id: 3,
     title: 'QR-Code scannen',
-    description: 'Scanne den QR-Code um die Antwort',
+    description: 'Finde den versteckten QR-Code und scanne ihn.',
     ionicIconName: 'qr-code',
     relativeUrl: '/tasks/qrcode',
     timeUntilPenalty: '05:00',
     status: 'locked',
-    hint: 'Schaue an den Wänden',
+    hint: 'Der Code befindet sich im Kursraum 6.',
   },
   {
     id: 4,
-    title: 'Handy flippen',
-    description: 'Drehe dein Handy',
+    title: 'Handy drehen',
+    description: 'Drehe das Handy um',
     ionicIconName: 'phone-portrait',
     relativeUrl: '/tasks/flip',
     timeUntilPenalty: '05:00',
     status: 'locked',
-    hint: 'Kannst du das lesen?',
+    hint: 'Kannst du das Lesen?',
   },
   {
     id: 5,
-    title: 'Standort 1 finden',
-    description: 'Finde den ersten Standort',
+    title: 'Geo location 1/2',
+    description: 'Begebe dich an einen bestimmten Standort',
     ionicIconName: 'location',
     relativeUrl: '/tasks/geolocation-1',
     timeUntilPenalty: '15:00',
     status: 'locked',
-    hint: 'Verwende die Karte',
+    hint: 'Begebe dich vor die Migros',
   },
   {
     id: 6,
-    title: 'Standort 2 finden',
-    description: 'Finde den zweiten Standort',
+    title: 'Geo location 2/2',
+    description: 'Begebe dich an einen bestimmten Standort',
     ionicIconName: 'navigate',
     relativeUrl: '/tasks/geolocation-2',
     timeUntilPenalty: '15:00',
     status: 'locked',
-    hint: 'Folge den Hinweisen',
+    hint: 'Laufe 20m in irgendeine Richtung',
   },
 ];
 
@@ -113,7 +109,7 @@ export class TaskService {
       }
     });
 
-    return { schnitzel, kartoffel };
+    return {schnitzel, kartoffel};
   });
 
   private loadTasks(): Task[] {
@@ -156,7 +152,7 @@ export class TaskService {
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return { ...task, status: 'active' as const };
+          return {...task, status: 'active' as const};
         }
 
         return task;
@@ -180,7 +176,7 @@ export class TaskService {
   pauseTask(id: number, elapsedSeconds: number): void {
     this.tasksSignal.update((tasks) =>
       tasks.map((task) =>
-        task.id === id ? { ...task, timeElapsed: elapsedSeconds } : task,
+        task.id === id ? {...task, timeElapsed: elapsedSeconds} : task,
       ),
     );
     this.saveTasks();
@@ -199,7 +195,7 @@ export class TaskService {
         }
 
         if (task.id === id + 1 && task.status === 'locked') {
-          return { ...task, status: 'active' as const };
+          return {...task, status: 'active' as const};
         }
 
         return task;
@@ -222,7 +218,7 @@ export class TaskService {
 
   updateTaskStatus(id: number, status: Task['status']): void {
     this.tasksSignal.update((tasks) =>
-      tasks.map((task) => (task.id === id ? { ...task, status } : task)),
+      tasks.map((task) => (task.id === id ? {...task, status} : task)),
     );
     this.saveTasks();
   }

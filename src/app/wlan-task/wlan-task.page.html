@@ -21,7 +21,6 @@
           <div class="location-subtitle text-secondary">{{ wlanConnected() ? 1 : 0 }} / 1</div>
         </div>
       </div>
-      <div class="bonus-pill">{{ task.bonusTime }}</div>
     </section>
 
     <section class="task-card step-card" [class.step-card--done]="wlanDisconnected()">
@@ -32,7 +31,6 @@
           <div class="location-subtitle text-secondary">{{ wlanDisconnected() ? 1 : 0 }} / 1</div>
         </div>
       </div>
-      <div class="bonus-pill">{{ task.bonusTime }}</div>
     </section>
 
     <section class="task-card">

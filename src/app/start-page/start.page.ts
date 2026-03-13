@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { IonContent, IonButton } from '@ionic/angular/standalone';
+import {Component, inject} from '@angular/core';
+import {Router} from '@angular/router';
+import {IonButton, IonContent} from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-start-page',
@@ -14,10 +14,6 @@ export class StartPage {
 
   onStart(): void {
     this.router.navigate(['/permissions']);
-  }
-
-  navigateToLeaderboard(): void {
-    this.router.navigate(['/leaderboard-page']);
   }
 
   goToLeaderboardPage(): void {

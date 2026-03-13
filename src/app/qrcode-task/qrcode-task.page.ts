@@ -8,6 +8,7 @@ import {PageHeaderComponent} from '../components/page-header/page-header.compone
 import {TaskService} from '../services/task.service';
 import {AudioService} from '../services/audio.service';
 import {HapticService} from '../services/haptic.service';
+import {Task} from '../models/task.interface';
 
 @Component({
   selector: 'app-qrcode-task',
@@ -32,6 +33,7 @@ export class QrTaskPage implements OnInit, OnDestroy {
   private previousElapsed = 0;
   private penaltySeconds = 5 * 60;
   private timerInterval?: ReturnType<typeof setInterval>;
+  private readonly TASK_ID = 3;
 
   currentElapsed = signal(0);
 
@@ -59,8 +61,20 @@ export class QrTaskPage implements OnInit, OnDestroy {
     }
   });
 
+  task!: Task & { index: number; total: number; cameraLabel: string; scanStatus: string; correctCode: string };
+
   ngOnInit(): void {
-    const taskData = this.taskService.getTaskById(3);
+    const taskData = this.taskService.getTaskById(this.TASK_ID);
+    if (taskData) {
+      this.task = {
+        ...taskData,
+        index: this.TASK_ID,
+        total: this.taskService.tasks().length,
+        cameraLabel: 'KAMERA',
+        scanStatus: 'Noch kein QR-Code erkannt',
+        correctCode: 'M335@ICT-BZ',
+      };
+    }
     this.previousElapsed = taskData?.timeElapsed ?? 0;
     this.startTime = Date.now();
     this.currentElapsed.set(this.previousElapsed);
@@ -74,17 +88,6 @@ export class QrTaskPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     clearInterval(this.timerInterval);
   }
-
-  task = {
-    index: 3,
-    total: 6,
-    title: 'QR-Code scannen',
-    description: 'Finde den versteckten QR-Code und scanne ihn.',
-    cameraLabel: 'KAMERA',
-    scanStatus: 'Noch kein QR-Code erkannt',
-    hint: 'Der Code befindet sich im Kursraum 6.',
-    correctCode: 'M335@ICT-BZ',
-  };
 
   async scanQrCode(): Promise<void> {
     try {
@@ -105,7 +108,7 @@ export class QrTaskPage implements OnInit, OnDestroy {
       if (scannedCode === this.task.correctCode) {
         this.task.scanStatus = 'Richtiger QR-Code erkannt';
         const timeSpent = this.calculateTimeSpent();
-        const allCompleted = await this.taskService.completeTask(3, timeSpent);
+        const allCompleted = await this.taskService.completeTask(this.TASK_ID, timeSpent);
         await this.audioService.playTaskDone();
         await this.hapticService.taskSuccess();
         if (allCompleted) {
@@ -141,7 +144,7 @@ export class QrTaskPage implements OnInit, OnDestroy {
 
   async skip(): Promise<void> {
     const totalElapsed = this.getTotalElapsedSeconds();
-    const allCompleted = await this.taskService.skipTask(3, totalElapsed);
+    const allCompleted = await this.taskService.skipTask(this.TASK_ID, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {
@@ -151,7 +154,7 @@ export class QrTaskPage implements OnInit, OnDestroy {
 
   cancel(): void {
     const totalElapsed = this.getTotalElapsedSeconds();
-    this.taskService.pauseTask(3, totalElapsed);
+    this.taskService.pauseTask(this.TASK_ID, totalElapsed);
     this.router.navigate(['/tasks']);
   }
 }

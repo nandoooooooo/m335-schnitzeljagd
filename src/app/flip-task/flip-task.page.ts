@@ -7,6 +7,7 @@ import {Capacitor, PluginListenerHandle} from '@capacitor/core';
 import {TaskService} from '../services/task.service';
 import {AudioService} from '../services/audio.service';
 import {HapticService} from '../services/haptic.service';
+import {Task} from '../models/task.interface';
 
 @Component({
   selector: 'app-rotate-task',
@@ -26,15 +27,9 @@ export class FlipTaskPage implements OnInit, OnDestroy {
   private startTime = Date.now();
   private previousElapsed = 0;
   private penaltySeconds = 5 * 60;
+  private readonly TASK_ID = 4;
 
-  task = {
-    index: 4,
-    total: 6,
-    title: 'Handy drehen',
-    description: 'Drehe das Handy um',
-    bonusTime: '±5m',
-    hint: 'Kannst du das Lesen?',
-  };
+  task!: Task & { index: number; total: number };
 
   isFlipped = signal(false);
   detected = computed(() => (this.isFlipped() ? 1 : 0));
@@ -65,7 +60,14 @@ export class FlipTaskPage implements OnInit, OnDestroy {
   });
 
   async ngOnInit(): Promise<void> {
-    const taskData = this.taskService.getTaskById(4);
+    const taskData = this.taskService.getTaskById(this.TASK_ID);
+    if (taskData) {
+      this.task = {
+        ...taskData,
+        index: this.TASK_ID,
+        total: this.taskService.tasks().length,
+      };
+    }
     this.previousElapsed = taskData?.timeElapsed ?? 0;
     this.startTime = Date.now();
     this.currentElapsed.set(this.previousElapsed);
@@ -104,7 +106,7 @@ export class FlipTaskPage implements OnInit, OnDestroy {
 
   private async onFlipDetected(): Promise<void> {
     const timeSpent = this.calculateTimeSpent();
-    const allCompleted = await this.taskService.completeTask(4, timeSpent);
+    const allCompleted = await this.taskService.completeTask(this.TASK_ID, timeSpent);
     await this.audioService.playTaskDone();
     await this.hapticService.taskSuccess();
     setTimeout(() => {
@@ -131,7 +133,7 @@ export class FlipTaskPage implements OnInit, OnDestroy {
 
   async skip(): Promise<void> {
     const totalElapsed = this.getTotalElapsedSeconds();
-    const allCompleted = await this.taskService.skipTask(4, totalElapsed);
+    const allCompleted = await this.taskService.skipTask(this.TASK_ID, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {
@@ -141,7 +143,7 @@ export class FlipTaskPage implements OnInit, OnDestroy {
 
   cancel(): void {
     const totalElapsed = this.getTotalElapsedSeconds();
-    this.taskService.pauseTask(4, totalElapsed);
+    this.taskService.pauseTask(this.TASK_ID, totalElapsed);
     this.router.navigate(['/tasks']);
   }
 }

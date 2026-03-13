@@ -6,6 +6,7 @@ import {PageHeaderComponent} from '../components/page-header/page-header.compone
 import {TaskService} from '../services/task.service';
 import {AudioService} from '../services/audio.service';
 import {HapticService} from '../services/haptic.service';
+import {Task} from '../models/task.interface';
 
 @Component({
   selector: 'app-charge-task',
@@ -24,15 +25,9 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
   private startTime = Date.now();
   private previousElapsed = 0;
   private penaltySeconds = 10 * 60;
+  private readonly TASK_ID = 1;
 
-  task = {
-    index: 1,
-    total: 6,
-    title: 'Stromversorgung',
-    description: 'Versorge das Gerät mit Strom',
-    hint: 'Schliesse dein Handy an ein Ladekabel an',
-    bonusTime: '±5m',
-  };
+  task!: Task & { index: number; total: number };
 
   isCharging = signal(false);
   detected = signal(0);
@@ -63,7 +58,14 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
   });
 
   async ngOnInit(): Promise<void> {
-    const taskData = this.taskService.getTaskById(1);
+    const taskData = this.taskService.getTaskById(this.TASK_ID);
+    if (taskData) {
+      this.task = {
+        ...taskData,
+        index: this.TASK_ID,
+        total: this.taskService.tasks().length,
+      };
+    }
     this.previousElapsed = taskData?.timeElapsed ?? 0;
     this.startTime = Date.now();
     this.currentElapsed.set(this.previousElapsed);
@@ -91,7 +93,7 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
       if (charging) {
         clearInterval(this.interval);
         const timeSpent = this.calculateTimeSpent();
-        const allCompleted = await this.taskService.completeTask(1, timeSpent);
+        const allCompleted = await this.taskService.completeTask(this.TASK_ID, timeSpent);
         await this.audioService.playTaskDone();
         await this.hapticService.taskSuccess();
         setTimeout(() => {
@@ -126,7 +128,7 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
 
   async skip(): Promise<void> {
     const totalElapsed = this.getTotalElapsedSeconds();
-    const allCompleted = await this.taskService.skipTask(1, totalElapsed);
+    const allCompleted = await this.taskService.skipTask(this.TASK_ID, totalElapsed);
     if (allCompleted) {
       this.router.navigate(['/tasks/finish']);
     } else {
@@ -136,7 +138,7 @@ export class ChargeTaskPage implements OnInit, OnDestroy {
 
   cancel(): void {
     const totalElapsed = this.getTotalElapsedSeconds();
-    this.taskService.pauseTask(1, totalElapsed);
+    this.taskService.pauseTask(this.TASK_ID, totalElapsed);
     this.router.navigate(['/tasks']);
   }
 }
