@@ -85,51 +85,23 @@ export class PermissionsPage implements OnInit {
     try {
       switch (key) {
         case 'location': {
-          const status = await Geolocation.checkPermissions();
-          const isGranted =
-            status.location === 'granted' ||
-            status.coarseLocation === 'granted';
-          const isDenied =
-            status.location === 'denied' && status.coarseLocation === 'denied';
-
-          if (isDenied) {
-            await this.showPermissionDeniedAlert('Standort');
-            await NativeSettings.openAndroid({
-              option: AndroidSettings.ApplicationDetails,
-            });
-            this.updatePermission('location', false);
-          } else if (isGranted) {
-            this.updatePermission('location', true);
-          } else {
-            const r = await Geolocation.requestPermissions();
-            const granted =
-              r.location === 'granted' || r.coarseLocation === 'granted';
-            this.updatePermission('location', granted);
-          }
+          const r = await Geolocation.requestPermissions();
+          const granted =
+            r.location === 'granted' || r.coarseLocation === 'granted';
+          this.updatePermission('location', granted);
           break;
         }
         case 'camera': {
-          const status = await Camera.checkPermissions();
-
-          if (status.camera === 'denied') {
-            await this.showPermissionDeniedAlert('Kamera');
-            await NativeSettings.openAndroid({
-              option: AndroidSettings.ApplicationDetails,
-            });
-            this.updatePermission('camera', false);
-          } else if (status.camera === 'granted') {
-            this.updatePermission('camera', true);
-          } else {
-            const r = await Camera.requestPermissions({
-              permissions: ['camera'],
-            });
-            this.updatePermission('camera', r.camera === 'granted');
-          }
+          const r = await Camera.requestPermissions({
+            permissions: ['camera'],
+          });
+          this.updatePermission('camera', r.camera === 'granted');
           break;
         }
       }
     } catch (e) {
       console.error(`Permission request failed for ${key}:`, e);
+      this.updatePermission(key, false);
     }
   }
 
@@ -174,17 +146,6 @@ export class PermissionsPage implements OnInit {
     await alert.present();
     await alert.onDidDismiss();
     this.router.navigate(['/tasks']);
-  }
-
-  private async showPermissionDeniedAlert(
-    permissionName: string,
-  ): Promise<void> {
-    const alert = await this.alertController.create({
-      header: 'Berechtigung erforderlich',
-      message: `Die ${permissionName}-Berechtigung wurde verweigert. Bitte aktiviere sie in den App-Einstellungen.`,
-      buttons: ['OK'],
-    });
-    await alert.present();
   }
 
   private async showToast(message: string): Promise<void> {
