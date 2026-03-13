@@ -1,20 +1,20 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
-import { Router } from '@angular/router';
-import { Geolocation } from '@capacitor/geolocation';
-import { Camera } from '@capacitor/camera';
-import { Capacitor } from '@capacitor/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
+import {Router} from '@angular/router';
+import {Geolocation} from '@capacitor/geolocation';
+import {Camera} from '@capacitor/camera';
+import {Capacitor} from '@capacitor/core';
 import {
-  IonContent,
-  IonHeader,
-  IonFooter,
-  IonToolbar,
+  AlertController,
   IonButton,
+  IonContent,
+  IonFooter,
+  IonHeader,
   IonToggle,
+  IonToolbar,
 } from '@ionic/angular/standalone';
-import { PageHeaderComponent } from '../components/page-header/page-header.component';
-import { AlertController } from '@ionic/angular/standalone';
-import { NameService } from '../../name-service';
-import { AndroidSettings, NativeSettings } from 'capacitor-native-settings';
+import {PageHeaderComponent} from '../components/page-header/page-header.component';
+import {NameService} from '../../name-service';
+import {AndroidSettings, NativeSettings} from 'capacitor-native-settings';
 
 interface Permission {
   key: 'location' | 'camera' | 'motion';
@@ -44,8 +44,8 @@ export class PermissionsPage implements OnInit {
   private nameService = inject(NameService);
 
   permissions = signal<Permission[]>([
-    { key: 'location', icon: '📍', label: 'Standort', granted: false },
-    { key: 'camera', icon: '📷', label: 'Kamera', granted: false },
+    {key: 'location', icon: '📍', label: 'Standort', granted: false},
+    {key: 'camera', icon: '📷', label: 'Kamera', granted: false},
   ]);
 
   async ngOnInit(): Promise<void> {
@@ -60,9 +60,7 @@ export class PermissionsPage implements OnInit {
       Camera.checkPermissions(),
     ]);
 
-    const locationGranted =
-      locStatus.location === 'granted' || locStatus.coarseLocation === 'granted';
-    this.updatePermission('location', locationGranted);
+    this.updatePermission('location', locStatus.location === 'granted');
     this.updatePermission('camera', camStatus.camera === 'granted');
   }
 
@@ -77,16 +75,12 @@ export class PermissionsPage implements OnInit {
   }
 
   async requestPermission(key: Permission['key']): Promise<void> {
-    if (!Capacitor.isNativePlatform()) {
-      this.updatePermission(key, true);
-      return;
-    }
     try {
       switch (key) {
         case 'location': {
           const r = await Geolocation.requestPermissions();
           const granted =
-            r.location === 'granted' || r.coarseLocation === 'granted';
+            r.location === 'granted';
           this.updatePermission('location', granted);
           break;
         }
@@ -107,7 +101,7 @@ export class PermissionsPage implements OnInit {
   async onWeiter(): Promise<void> {
     const alert = await this.alertController.create({
       header: 'Dein Name',
-      inputs: [{ name: 'name', type: 'text', placeholder: 'Max Mustermann' }],
+      inputs: [{name: 'name', type: 'text', placeholder: 'Max Mustermann'}],
       buttons: [
         {
           text: 'Weiter',
@@ -127,7 +121,7 @@ export class PermissionsPage implements OnInit {
 
   private updatePermission(key: Permission['key'], granted: boolean): void {
     this.permissions.update((list) =>
-      list.map((p) => (p.key === key ? { ...p, granted } : p)),
+      list.map((p) => (p.key === key ? {...p, granted} : p)),
     );
   }
 
