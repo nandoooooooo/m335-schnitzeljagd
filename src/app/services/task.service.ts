@@ -289,7 +289,6 @@ export class TaskService {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          responseType: 'text',
         }),
       );
       console.log('Leaderboard entry saved to Google Forms');
