@@ -53,7 +53,8 @@ export class LeaderboardPage {
       });
   });
 
-  goToStart() {
+  goToStart(): void {
+    this.taskService.clearCurrentRun();
     this.router.navigate(['/start-page']);
   }
 }
