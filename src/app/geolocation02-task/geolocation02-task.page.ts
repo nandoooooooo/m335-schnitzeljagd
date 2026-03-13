@@ -118,7 +118,6 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
       {enableHighAccuracy: true},
       (position, error) => {
         if (error || !position) {
-          console.log('[GPS] Error or no position:', error);
           return;
         }
 
@@ -126,18 +125,15 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
         const currentLongitude = position.coords.longitude;
         const accuracy = position.coords.accuracy ?? Infinity;
 
-        console.log('[GPS] Reading:', {accuracy, lat: currentLatitude.toFixed(5), lng: currentLongitude.toFixed(5)});
 
         this.gpsAccuracy.set(accuracy);
 
         if (!this.startLatitude || !this.startLongitude) {
           if (accuracy > MAX_ACCURACY_METERS) {
-            console.log('[GPS] Accuracy too low, skipping');
             return;
           }
 
           if (!this.startPositionTimestamp) {
-            console.log('[GPS] First good reading, starting stabilization');
             this.startPositionTimestamp = Date.now();
             this.bestAccuracy = accuracy;
             this.bestAccuracyPosition = {lat: currentLatitude, lng: currentLongitude};
@@ -145,7 +141,6 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
 
             this.safetyTimeoutId = setTimeout(() => {
               if (!this.startLatitude && this.bestAccuracyPosition) {
-                console.log('[GPS] Safety timeout - forcing start position');
                 this.startLatitude = this.bestAccuracyPosition.lat;
                 this.startLongitude = this.bestAccuracyPosition.lng;
                 this.stabilizationSecondsRemaining.set(null);
@@ -160,13 +155,11 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
           this.stabilizationSecondsRemaining.set(Math.max(0, secondsRemaining));
 
           if (accuracy < this.bestAccuracy) {
-            console.log('[GPS] New best accuracy:', accuracy);
             this.bestAccuracy = accuracy;
             this.bestAccuracyPosition = {lat: currentLatitude, lng: currentLongitude};
           }
 
           if (timeSinceFirstGoodReading >= STABILIZATION_DELAY_MS && this.bestAccuracyPosition) {
-            console.log('[GPS] Stabilization complete, setting start position:', this.bestAccuracyPosition);
             this.startLatitude = this.bestAccuracyPosition.lat;
             this.startLongitude = this.bestAccuracyPosition.lng;
             this.stabilizationSecondsRemaining.set(null);
@@ -177,7 +170,6 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
           return;
         }
 
-        console.log('[GPS] Tracking movement');
 
         const movedMeters = this.calculateDistance(
           this.startLatitude,
@@ -186,12 +178,10 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
           currentLongitude,
         );
 
-        console.log('[GPS] Distance moved:', movedMeters.toFixed(1), 'm');
         this.distanceMoved.set(movedMeters);
 
         const timeElapsedSinceStart = this.getTotalElapsedSeconds();
         if (movedMeters >= TARGET_DISTANCE_METERS && timeElapsedSinceStart >= MIN_TIME_ELAPSED_SECONDS) {
-          console.log('[GPS] Target reached!');
           this.onTargetReached();
         }
       },
