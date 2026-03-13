@@ -1,4 +1,4 @@
 export const environment = {
-  production: false,
-  leaderboardUrl: 'https://docs.google.com/forms/u/0/d/e/1FAIpQLSc9v68rbCckYwcIekRLOaVZ0Qdm3eeh1xCEkgpn3d7pParfLQ/formResponse'
+  leaderboardUrl:
+    'https://docs.google.com/forms/u/0/d/e/1FAIpQLSe_rr4dfM11mWhSKwbjwoIzEDPi9ahrEsAsHhESicJ9zS9lTw/formResponse',
 };
