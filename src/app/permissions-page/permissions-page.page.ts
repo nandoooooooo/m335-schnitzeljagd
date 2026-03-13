@@ -61,7 +61,9 @@ export class PermissionsPage implements OnInit {
       Camera.checkPermissions(),
     ]);
 
-    this.updatePermission('location', locStatus.location === 'granted');
+    const locationGranted =
+      locStatus.location === 'granted' || locStatus.coarseLocation === 'granted';
+    this.updatePermission('location', locationGranted);
     this.updatePermission('camera', camStatus.camera === 'granted');
   }
 
@@ -84,18 +86,25 @@ export class PermissionsPage implements OnInit {
       switch (key) {
         case 'location': {
           const status = await Geolocation.checkPermissions();
+          const isGranted =
+            status.location === 'granted' ||
+            status.coarseLocation === 'granted';
+          const isDenied =
+            status.location === 'denied' && status.coarseLocation === 'denied';
 
-          if (status.location === 'denied') {
+          if (isDenied) {
             await this.showPermissionDeniedAlert('Standort');
             await NativeSettings.openAndroid({
               option: AndroidSettings.ApplicationDetails,
             });
             this.updatePermission('location', false);
-          } else if (status.location === 'granted') {
+          } else if (isGranted) {
             this.updatePermission('location', true);
           } else {
             const r = await Geolocation.requestPermissions();
-            this.updatePermission('location', r.location === 'granted');
+            const granted =
+              r.location === 'granted' || r.coarseLocation === 'granted';
+            this.updatePermission('location', granted);
           }
           break;
         }
