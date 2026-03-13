@@ -7,6 +7,7 @@ import {TaskService} from '../services/task.service';
 import {AudioService} from '../services/audio.service';
 import {HapticService} from '../services/haptic.service';
 import {Task} from '../models/task.interface';
+import {parseTimeToSeconds} from '../utils/time.utils';
 
 const TARGET_DISTANCE_METERS = 20;
 const DEGREES_TO_METERS = 111_000;
@@ -30,7 +31,7 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
   private timerInterval?: ReturnType<typeof setInterval>;
   private startTime = Date.now();
   private previousElapsed = 0;
-  private penaltySeconds = 15 * 60;
+  private penaltySeconds = 0;
   private readonly TASK_ID = 6;
 
   private startLatitude?: number;
@@ -102,6 +103,7 @@ export class Geolocation02TaskPage implements OnInit, OnDestroy {
         index: this.TASK_ID,
         total: this.taskService.tasks().length,
       };
+      this.penaltySeconds = parseTimeToSeconds(taskData.timeUntilPenalty);
     }
     this.previousElapsed = taskData?.timeElapsed ?? 0;
     this.startTime = Date.now();

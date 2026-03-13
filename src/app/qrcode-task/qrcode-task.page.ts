@@ -9,6 +9,7 @@ import {TaskService} from '../services/task.service';
 import {AudioService} from '../services/audio.service';
 import {HapticService} from '../services/haptic.service';
 import {Task} from '../models/task.interface';
+import {parseTimeToSeconds} from '../utils/time.utils';
 
 @Component({
   selector: 'app-qrcode-task',
@@ -31,7 +32,7 @@ export class QrTaskPage implements OnInit, OnDestroy {
   private hapticService = inject(HapticService);
   private startTime = Date.now();
   private previousElapsed = 0;
-  private penaltySeconds = 5 * 60;
+  private penaltySeconds = 0;
   private timerInterval?: ReturnType<typeof setInterval>;
   private readonly TASK_ID = 3;
 
@@ -74,6 +75,7 @@ export class QrTaskPage implements OnInit, OnDestroy {
         scanStatus: 'Noch kein QR-Code erkannt',
         correctCode: 'M335@ICT-BZ',
       };
+      this.penaltySeconds = parseTimeToSeconds(taskData.timeUntilPenalty);
     }
     this.previousElapsed = taskData?.timeElapsed ?? 0;
     this.startTime = Date.now();

@@ -3,14 +3,10 @@ import {LeaderboardEntry, ProgressStats, Task,} from '../models/task.interface';
 import {environment} from '../../environments/environment';
 import {NameService} from '../../name-service';
 import {CapacitorHttp} from '@capacitor/core';
+import {parseTimeToSeconds} from '../utils/time.utils';
 
 const STORAGE_KEY = 'schnitzeljagd_tasks';
 const LEADERBOARD_KEY = 'schnitzeljagd_leaderboard';
-
-function parseTimeToSeconds(timeString: string): number {
-  const [minutes, seconds] = timeString.split(':').map(Number);
-  return minutes * 60 + seconds;
-}
 
 const DEFAULT_TASKS: Task[] = [
   {

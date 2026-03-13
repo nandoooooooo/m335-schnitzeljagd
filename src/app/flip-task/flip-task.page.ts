@@ -8,6 +8,7 @@ import {TaskService} from '../services/task.service';
 import {AudioService} from '../services/audio.service';
 import {HapticService} from '../services/haptic.service';
 import {Task} from '../models/task.interface';
+import {parseTimeToSeconds} from '../utils/time.utils';
 
 @Component({
   selector: 'app-rotate-task',
@@ -26,7 +27,7 @@ export class FlipTaskPage implements OnInit, OnDestroy {
   private alreadyDetected = false;
   private startTime = Date.now();
   private previousElapsed = 0;
-  private penaltySeconds = 5 * 60;
+  private penaltySeconds = 0;
   private readonly TASK_ID = 4;
 
   task!: Task & { index: number; total: number };
@@ -67,6 +68,7 @@ export class FlipTaskPage implements OnInit, OnDestroy {
         index: this.TASK_ID,
         total: this.taskService.tasks().length,
       };
+      this.penaltySeconds = parseTimeToSeconds(taskData.timeUntilPenalty);
     }
     this.previousElapsed = taskData?.timeElapsed ?? 0;
     this.startTime = Date.now();
